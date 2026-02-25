@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Save, ImageIcon, Loader2, ExternalLink, Store, ShoppingBag, Eye, EyeOff } from 'lucide-react';
+import { Save, ImageIcon, Loader2, ExternalLink, Store, ShoppingBag, Eye, EyeOff, Palette, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,44 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { useGetSiteSettings, useUpdateSiteSettings } from '../hooks/useQueries';
 import { getHeroImage } from '../utils/imageHelpers';
+
+// ─── Color Scheme Definitions ─────────────────────────────────────────────────
+
+interface ColorSchemeOption {
+  id: string;
+  name: string;
+  description: string;
+  swatches: string[]; // CSS color values for preview swatches
+}
+
+const COLOR_SCHEMES: ColorSchemeOption[] = [
+  {
+    id: 'default',
+    name: 'Ivory & Gold',
+    description: 'Warm ivory tones with champagne gold accents',
+    swatches: ['#f9f3ec', '#e8c9b8', '#c9a96e', '#5c3d2e'],
+  },
+  {
+    id: 'rose-petal',
+    name: 'Rose Petal',
+    description: 'Soft rose and dusty pink with berry accents',
+    swatches: ['#fdf0f3', '#f2c4ce', '#d4607a', '#7a1e35'],
+  },
+  {
+    id: 'midnight-luxe',
+    name: 'Midnight Luxe',
+    description: 'Deep navy and charcoal with silver highlights',
+    swatches: ['#f0f2f7', '#c8cfe8', '#4a5580', '#1a1f3a'],
+  },
+  {
+    id: 'sage-cream',
+    name: 'Sage & Cream',
+    description: 'Earthy sage greens with warm cream tones',
+    swatches: ['#f4f7f2', '#c8d9c4', '#6b9e6b', '#2d4a2d'],
+  },
+];
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function SiteSettingsSection() {
   const { data: settings, isLoading } = useGetSiteSettings();
@@ -29,6 +67,9 @@ export default function SiteSettingsSection() {
   const [shopifyStorefrontAccessToken, setShopifyStorefrontAccessToken] = useState('');
   const [showToken, setShowToken] = useState(false);
 
+  // Color scheme
+  const [colorScheme, setColorScheme] = useState('default');
+
   // Populate form when settings load
   useEffect(() => {
     if (settings) {
@@ -40,6 +81,7 @@ export default function SiteSettingsSection() {
       setShopifyEnabled(settings.shopifyEnabled ?? false);
       setShopifyStoreDomain(settings.shopifyStoreDomain ?? '');
       setShopifyStorefrontAccessToken(settings.shopifyStorefrontAccessToken ?? '');
+      setColorScheme(settings.colorScheme || 'default');
       setPreviewError(false);
     }
   }, [settings]);
@@ -57,7 +99,10 @@ export default function SiteSettingsSection() {
         shopifyEnabled,
         shopifyStoreDomain,
         shopifyStorefrontAccessToken,
+        colorScheme,
       });
+      // Apply color scheme immediately after save
+      document.documentElement.setAttribute('data-color-scheme', colorScheme);
       toast.success('Site settings saved successfully!');
     } catch {
       toast.error('Failed to save site settings. Please try again.');
@@ -145,6 +190,104 @@ export default function SiteSettingsSection() {
                 </>
               )}
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Color Scheme Card */}
+      <Card className="border-blush-deep/20 shadow-card">
+        <CardHeader className="pb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-gold/10 flex items-center justify-center">
+              <Palette className="w-4 h-4 text-gold" />
+            </div>
+            <div>
+              <CardTitle className="font-serif text-lg text-foreground">Color Scheme</CardTitle>
+              <CardDescription className="font-sans text-sm text-muted-foreground">
+                Choose a color palette that defines the look and feel of your storefront.
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="space-y-4">
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} className="h-24 w-full rounded-xl bg-blush/30" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {COLOR_SCHEMES.map((scheme) => {
+                const isSelected = colorScheme === scheme.id;
+                return (
+                  <button
+                    key={scheme.id}
+                    type="button"
+                    onClick={() => setColorScheme(scheme.id)}
+                    className={`relative flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all duration-200 ${
+                      isSelected
+                        ? 'border-rose-dark bg-blush/30 shadow-sm'
+                        : 'border-blush-deep/20 bg-white/50 hover:border-blush-deep/40 hover:bg-blush/10'
+                    }`}
+                  >
+                    {/* Color swatches */}
+                    <div className="flex gap-1 shrink-0">
+                      {scheme.swatches.map((color, idx) => (
+                        <div
+                          key={idx}
+                          className="w-6 h-10 rounded-md first:rounded-l-lg last:rounded-r-lg"
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+
+                    {/* Scheme info */}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-sans text-sm font-semibold text-foreground leading-tight">
+                        {scheme.name}
+                      </p>
+                      <p className="font-sans text-xs text-muted-foreground mt-0.5 leading-snug">
+                        {scheme.description}
+                      </p>
+                    </div>
+
+                    {/* Selected checkmark */}
+                    {isSelected && (
+                      <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-rose-dark flex items-center justify-center">
+                        <Check className="w-3 h-3 text-ivory" />
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          <p className="font-sans text-xs text-muted-foreground">
+            The selected color scheme will be applied across the entire storefront after saving.
+          </p>
+
+          {/* Save Button */}
+          <div className="flex justify-end pt-2">
+            <Button
+              onClick={handleSave}
+              disabled={updateSettings.isPending || isLoading}
+              className="bg-rose-dark hover:bg-rose-dark/90 text-ivory font-sans shadow-sm"
+            >
+              {updateSettings.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving…
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Settings
+                </>
+              )}
+            </Button>
           </div>
         </CardContent>
       </Card>

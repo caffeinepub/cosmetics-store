@@ -17,6 +17,7 @@ const defaultSiteSettings: SiteSettings = {
   shopifyStoreDomain: '',
   shopifyStorefrontAccessToken: '',
   shopifyEnabled: false,
+  colorScheme: 'default',
 };
 
 // ─── Products ────────────────────────────────────────────────────────────────

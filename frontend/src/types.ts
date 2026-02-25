@@ -39,4 +39,5 @@ export interface SiteSettings {
   shopifyStoreDomain: string;
   shopifyStorefrontAccessToken: string;
   shopifyEnabled: boolean;
+  colorScheme: string;
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 11,
+  "projectStateVersion": 13,
   "summary": "E-commerce website for selling cosmetics products.",
   "architectural_notes": [],
   "known_issues": [],
@@ -125,6 +125,30 @@
         "REQ-22"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-the-sitesettings-typescript-type-in-frontend-src-types-ts-and-the-usequeries-ts-hooks-to-include-the-colorscheme-string-field-alongside-existing-sitesettings-fields",
+      "title": "Update the SiteSettings TypeScript type in frontend/src/types.ts and the useQueries.ts hooks to include the colorScheme string field alongside existing SiteSettings fields.",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-color-scheme-subsection-to-the-sitesettingssection-component-in-the-admin-page-display-a-set-of-predefined-color-scheme-options-e-g-default-ivory-gold-rose-petal-midnight-luxe-sage-cream-as-selectable-swatches-or-a-radio-select-control-load-the-current-value-from-getsitesettings-on-mount-and-save-the-selected-scheme-via-the-existing-updatesitesettings-mutation-display-success-error-toast-notifications-on-save",
+      "title": "Add a 'Color Scheme' subsection to the SiteSettingsSection component in the Admin page. Display a set of predefined color scheme options (e.g., 'Default (Ivory & Gold)', 'Rose Petal', 'Midnight Luxe', 'Sage & Cream') as selectable swatches or a radio/select control. Load the current value from getSiteSettings on mount, and save the selected scheme via the existing updateSiteSettings mutation. Display success/error toast notifications on save.",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-the-active-color-scheme-site-wide-by-reading-the-colorscheme-value-from-getsitesettings-on-app-load-in-app-tsx-or-a-top-level-provider-and-injecting-the-corresponding-css-custom-property-overrides-onto-the-document-root-define-css-variable-sets-for-each-predefined-scheme-that-override-the-existing-brand-color-tokens-in-frontend-src-index-css-ivory-blush-gold-etc",
+      "title": "Apply the active color scheme site-wide by reading the colorScheme value from getSiteSettings on app load (in App.tsx or a top-level provider) and injecting the corresponding CSS custom property overrides onto the document root. Define CSS variable sets for each predefined scheme that override the existing brand color tokens in frontend/src/index.css (ivory, blush, gold, etc.).",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -229,6 +253,20 @@
       "summary": "Extend the backend SiteSettings record to include Shopify integration fields: shopifyStoreDomain (Text), shopifyStorefrontAccessToken (Text), and shopifyEnabled (Bool). Update getSiteSettings and updateSiteSettings actor methods to include these fields with sensible defaults (empty strings / false).",
       "reqIds": [
         "REQ-19"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Add color scheme options to the Site Settings section in the Admin Panel, allowing the admin to select or customize the site's color palette.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Extend the backend SiteSettings record in main.mo to include a colorScheme field (Text) with a sensible default (e.g., 'default'). Update getSiteSettings and updateSiteSettings actor methods to include this field.",
+      "reqIds": [
+        "REQ-23"
       ],
       "status": "pending"
     }

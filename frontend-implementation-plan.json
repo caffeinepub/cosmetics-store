@@ -1,79 +1,63 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add Shopify Integration Interface",
+  "title": "Add color scheme options to Site Settings",
   "requirements": [
     {
-      "id": "REQ-20",
-      "summary": "Update TypeScript types to include Shopify integration fields in SiteSettings and mutation payloads",
+      "id": "REQ-24",
+      "summary": "Update SiteSettings TypeScript type to include colorScheme field",
       "acceptanceCriteria": [
-        "SiteSettings TypeScript type includes shopifyStoreDomain, shopifyStorefrontAccessToken, and shopifyEnabled",
-        "updateSiteSettings mutation payload includes these new fields",
-        "No TypeScript type errors related to the new fields"
+        "SiteSettings TypeScript interface includes colorScheme: string",
+        "useGetSiteSettings hook returns colorScheme",
+        "updateSiteSettings mutation payload includes colorScheme"
       ],
       "file_operations": [
         {
           "path": "frontend/src/types.ts",
           "operation": "modify",
-          "description": "Add shopifyStoreDomain (string), shopifyStorefrontAccessToken (string), and shopifyEnabled (boolean) fields to the SiteSettings interface to match the backend interface definition"
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Update the updateSiteSettings mutation payload type to include the new Shopify fields (shopifyStoreDomain, shopifyStorefrontAccessToken, shopifyEnabled) ensuring they are passed to the backend updateSiteSettings method"
+          "description": "Add colorScheme: string field to the SiteSettings interface alongside existing fields (shopifyStoreDomain, currency, address, storeName, contactEmail, shopifyStorefrontAccessToken, heroBannerImageUrl, shopifyEnabled)"
         }
       ]
     },
     {
-      "id": "REQ-21",
-      "summary": "Add Shopify Integration subsection to SiteSettingsSection component for configuring Shopify credentials",
+      "id": "REQ-25",
+      "summary": "Add Color Scheme subsection to SiteSettingsSection component with predefined scheme selector",
       "acceptanceCriteria": [
-        "A 'Shopify Integration' subsection appears in the Site Settings tab of the Admin page",
-        "An enable/disable toggle for the Shopify integration is rendered",
-        "Input fields for Shopify Store Domain and Storefront Access Token are rendered",
-        "Fields are pre-populated with current values loaded from getSiteSettings on mount",
-        "Clicking Save persists values via updateSiteSettings and shows a success toast",
-        "If save fails, an error toast is displayed"
+        "A 'Color Scheme' subsection appears in the Site Settings tab of the Admin page",
+        "At least 4 predefined color scheme options are presented as selectable swatches or radio/select inputs",
+        "Each swatch visually previews the primary colors of that scheme",
+        "The currently saved color scheme is pre-selected when the section loads",
+        "Clicking 'Save' calls updateSiteSettings with the selected colorScheme value",
+        "A success toast appears on successful save; an error toast appears on failure"
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/SiteSettingsSection.tsx",
           "operation": "modify",
-          "description": "Add a 'Shopify Integration' subsection below the hero banner configuration with: a checkbox/switch for shopifyEnabled, text input for shopifyStoreDomain (placeholder: 'mystore.myshopify.com'), and text input for shopifyStorefrontAccessToken (type password for security). Bind all fields to the siteSettings state loaded from getSiteSettings. Ensure the existing save handler includes the new Shopify fields when calling updateSiteSettings mutation. Show success/error toasts on save completion"
+          "description": "Add a 'Color Scheme' subsection below existing fields. Define predefined color schemes: 'default' (Ivory & Gold), 'rose-petal', 'midnight-luxe', and 'sage-cream'. Render each as a selectable swatch displaying a visual preview of its primary colors. Load the current colorScheme value from useGetSiteSettings on mount and pre-select it. Include the selected colorScheme in the updateSiteSettings mutation payload alongside existing fields. Display success/error toasts using the existing toast pattern after save completes."
         }
       ]
     },
     {
-      "id": "REQ-22",
-      "summary": "Create Shopify Products Import UI within Admin page to fetch and import products from Shopify Storefront API",
+      "id": "REQ-26",
+      "summary": "Apply active color scheme site-wide by injecting CSS custom property overrides on app load",
       "acceptanceCriteria": [
-        "A 'Shopify Import' tab or panel appears in the Admin page when shopifyEnabled is true",
-        "When Shopify credentials are missing or integration is disabled, a prompt to configure settings is shown instead",
-        "Products are fetched from the Shopify Storefront GraphQL API using the stored domain and access token",
-        "Each product card shows title, thumbnail image, and price",
-        "Clicking 'Import' on a product card calls addProduct on the backend with the product data and shows a success or error toast",
-        "A loading state is shown while products are being fetched from Shopify"
+        "On app load, the active colorScheme is fetched from getSiteSettings",
+        "The corresponding CSS variable overrides are applied to :root or document.documentElement",
+        "Switching the color scheme in Admin Settings and saving immediately reflects the new palette on the storefront after a page reload or query invalidation",
+        "The 'Default' scheme preserves the existing ivory/blush/gold palette with no visual regression",
+        "Each alternative scheme applies visually distinct but cohesive palette changes across the navigation, hero banner, buttons, and product cards"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/utils/shopifyApi.ts",
-          "operation": "create",
-          "description": "Create utility module for interacting with Shopify Storefront GraphQL API. Export fetchShopifyProducts function that accepts storeDomain and storefrontAccessToken, constructs the Storefront API endpoint URL, and sends a GraphQL query to fetch products with fields: id, title, description, priceRange, images, productType. Return typed array of Shopify product objects. Include error handling for network failures and invalid credentials"
-        },
-        {
-          "path": "frontend/src/components/ShopifyImportPanel.tsx",
-          "operation": "create",
-          "description": "Create panel component that: (1) accepts siteSettings as prop and checks if shopifyEnabled is true and credentials are configured; (2) if not configured, displays a message prompting admin to configure Shopify settings with a link to the Site Settings tab; (3) if configured, fetches products from Shopify using the fetchShopifyProducts utility and displays them in a responsive grid; (4) for each product, renders a card with thumbnail image, title, formatted price, and an 'Import' button; (5) on Import click, calls the importShopifyProduct backend method (note: verify backend method signature matches Product fields) with mapped Shopify data and shows success/error toast; (6) shows loading skeleton while fetching products from Shopify; (7) handles empty state when no products are returned"
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/src/index.css",
           "operation": "modify",
-          "description": "Add useImportShopifyProduct mutation hook that calls the backend importShopifyProduct method. Accept parameters: title, category, description, price, imageUrl, stock, featured. Invalidate the products query cache on success to refresh the product list"
+          "description": "Define CSS custom property override sets for each predefined color scheme (default, rose-petal, midnight-luxe, sage-cream) using data attribute selectors on :root (e.g., :root[data-color-scheme='rose-petal']). Each scheme overrides the brand color tokens (--ivory, --blush, --gold, --ivory-light, --gold-dark) with OKLCH values that provide visually distinct but cohesive palettes. The 'default' scheme retains the existing ivory/blush/gold tokens without changes."
         },
         {
-          "path": "frontend/src/pages/AdminPage.tsx",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Add a new 'Shopify Import' tab to the Tabs component navigation alongside 'Products' and 'Site Settings'. In the corresponding TabsContent, render the ShopifyImportPanel component passing the current siteSettings from the useSiteSettings query hook. Ensure the tab is always visible in the UI (users will see a configuration prompt if Shopify is not enabled)"
+          "description": "Fetch the active colorScheme from getSiteSettings using useGetSiteSettings hook on app load. Apply the colorScheme value as a data-color-scheme attribute on document.documentElement (e.g., document.documentElement.setAttribute('data-color-scheme', colorScheme || 'default')). Re-apply the attribute whenever the colorScheme query data changes to support immediate reflection after Admin save and query invalidation."
         }
       ]
     }

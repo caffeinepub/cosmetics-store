@@ -2,10 +2,9 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-sitesettings-typescript-type-and-the-updatesitesettings-mutation-payload-in-usequeries-ts-to-include-the-new-shopify-fields-shopifystoredomain-string-shopifystorefrontaccesstoken-string-and-shopifyenabled-boolean",
-      "featureTitle": "Update the SiteSettings TypeScript type and the updateSiteSettings mutation payload in useQueries.ts to include the new Shopify fields: shopifyStoreDomain (string), shopifyStorefrontAccessToken (string), and shopifyEnabled (boolean).",
+      "featureId": "feature-update-the-sitesettings-typescript-type-in-frontend-src-types-ts-and-the-usequeries-ts-hooks-to-include-the-colorscheme-string-field-alongside-existing-sitesettings-fields",
+      "featureTitle": "Update the SiteSettings TypeScript type in frontend/src/types.ts and the useQueries.ts hooks to include the colorScheme string field alongside existing SiteSettings fields.",
       "files": [
-        "frontend/src/hooks/useQueries.ts",
         "frontend/src/types.ts"
       ],
       "components": [
@@ -17,13 +16,13 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-20"
+        "REQ-24"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-shopify-integration-subsection-to-the-sitesettingssection-component-in-the-admin-page-the-subsection-must-include-a-toggle-checkbox-to-enable-or-disable-the-shopify-integration-shopifyenabled-an-input-field-for-the-shopify-store-domain-e-g-mystore-myshopify-com-and-an-input-field-for-the-shopify-storefront-access-token-all-fields-must-be-loaded-from-getsitesettings-on-mount-and-saved-via-the-existing-updatesitesettings-mutation-display-success-error-toast-notifications-on-save",
-      "featureTitle": "Add a 'Shopify Integration' subsection to the SiteSettingsSection component in the Admin page. The subsection must include: a toggle/checkbox to enable or disable the Shopify integration (shopifyEnabled), an input field for the Shopify Store Domain (e.g. mystore.myshopify.com), and an input field for the Shopify Storefront Access Token. All fields must be loaded from getSiteSettings on mount and saved via the existing updateSiteSettings mutation. Display success/error toast notifications on save.",
+      "featureId": "feature-add-a-color-scheme-subsection-to-the-sitesettingssection-component-in-the-admin-page-display-a-set-of-predefined-color-scheme-options-e-g-default-ivory-gold-rose-petal-midnight-luxe-sage-cream-as-selectable-swatches-or-a-radio-select-control-load-the-current-value-from-getsitesettings-on-mount-and-save-the-selected-scheme-via-the-existing-updatesitesettings-mutation-display-success-error-toast-notifications-on-save",
+      "featureTitle": "Add a 'Color Scheme' subsection to the SiteSettingsSection component in the Admin page. Display a set of predefined color scheme options (e.g., 'Default (Ivory & Gold)', 'Rose Petal', 'Midnight Luxe', 'Sage & Cream') as selectable swatches or a radio/select control. Load the current value from getSiteSettings on mount, and save the selected scheme via the existing updateSiteSettings mutation. Display success/error toast notifications on save.",
       "files": [
         "frontend/src/components/SiteSettingsSection.tsx"
       ],
@@ -36,18 +35,16 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-21"
+        "REQ-25"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-dedicated-shopify-products-import-panel-within-the-admin-page-as-a-new-tab-or-sub-section-alongside-products-and-site-settings-when-shopify-integration-is-enabled-and-credentials-are-configured-display-a-ui-that-allows-the-admin-to-view-a-list-of-products-fetched-from-the-configured-shopify-storefront-api-using-the-stored-domain-and-access-token-via-the-shopify-storefront-graphql-api-from-the-frontend-each-product-entry-should-show-the-product-title-image-thumbnail-price-and-an-import-button-clicking-import-calls-the-backend-addproduct-method-to-save-the-product-to-the-icp-store",
-      "featureTitle": "Add a dedicated Shopify Products Import panel within the Admin page (as a new tab or sub-section alongside Products and Site Settings). When Shopify integration is enabled and credentials are configured, display a UI that allows the admin to view a list of products fetched from the configured Shopify Storefront API (using the stored domain and access token via the Shopify Storefront GraphQL API from the frontend). Each product entry should show the product title, image thumbnail, price, and an 'Import' button. Clicking 'Import' calls the backend addProduct method to save the product to the ICP store.",
+      "featureId": "feature-apply-the-active-color-scheme-site-wide-by-reading-the-colorscheme-value-from-getsitesettings-on-app-load-in-app-tsx-or-a-top-level-provider-and-injecting-the-corresponding-css-custom-property-overrides-onto-the-document-root-define-css-variable-sets-for-each-predefined-scheme-that-override-the-existing-brand-color-tokens-in-frontend-src-index-css-ivory-blush-gold-etc",
+      "featureTitle": "Apply the active color scheme site-wide by reading the colorScheme value from getSiteSettings on app load (in App.tsx or a top-level provider) and injecting the corresponding CSS custom property overrides onto the document root. Define CSS variable sets for each predefined scheme that override the existing brand color tokens in frontend/src/index.css (ivory, blush, gold, etc.).",
       "files": [
-        "frontend/src/components/ShopifyImportPanel.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/AdminPage.tsx",
-        "frontend/src/utils/shopifyApi.ts"
+        "frontend/src/App.tsx",
+        "frontend/src/index.css"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -58,7 +55,7 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-22"
+        "REQ-26"
       ],
       "confidence": "high"
     }

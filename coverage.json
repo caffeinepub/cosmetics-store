@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-25T03:36:06.418Z",
+  "generatedAt": "2026-02-25T03:44:09.451Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -11,28 +11,26 @@
     "implemented": 3,
     "items": [
       {
-        "id": "REQ-19",
-        "summary": "Extend the backend SiteSettings record to include Shopify integration fields: shopifyStoreDomain (Text), shopifyStorefrontAccessToken (Text), and shopifyEnabled (Bool). Update getSiteSettings and updateSiteSettings actor methods to include these fields with sensible defaults (empty strings / false).",
+        "id": "REQ-23",
+        "summary": "Extend the backend SiteSettings record in main.mo to include a colorScheme field (Text) with a sensible default (e.g., 'default'). Update getSiteSettings and updateSiteSettings actor methods to include this field.",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-20",
-        "summary": "Update the SiteSettings TypeScript type and the updateSiteSettings mutation payload in useQueries.ts to include the new Shopify fields: shopifyStoreDomain (string), shopifyStorefrontAccessToken (string), and shopifyEnabled (boolean).",
+        "id": "REQ-24",
+        "summary": "Update the SiteSettings TypeScript type in frontend/src/types.ts and the useQueries.ts hooks to include the colorScheme string field alongside existing SiteSettings fields.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/types.ts",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/types.ts"
         ],
         "matchedFiles": [
-          "frontend/src/types.ts",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/types.ts"
         ]
       },
       {
-        "id": "REQ-21",
-        "summary": "Add a 'Shopify Integration' subsection to the SiteSettingsSection component in the Admin page. The subsection must include: a toggle/checkbox to enable or disable the Shopify integration (shopifyEnabled), an input field for the Shopify Store Domain (e.g. mystore.myshopify.com), and an input field for the Shopify Storefront Access Token. All fields must be loaded from getSiteSettings on mount and saved via the existing updateSiteSettings mutation. Display success/error toast notifications on save.",
+        "id": "REQ-25",
+        "summary": "Add a 'Color Scheme' subsection to the SiteSettingsSection component in the Admin page. Display a set of predefined color scheme options (e.g., 'Default (Ivory & Gold)', 'Rose Petal', 'Midnight Luxe', 'Sage & Cream') as selectable swatches or a radio/select control. Load the current value from getSiteSettings on mount, and save the selected scheme via the existing updateSiteSettings mutation. Display success/error toast notifications on save.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/components/SiteSettingsSection.tsx"
@@ -42,46 +40,36 @@
         ]
       },
       {
-        "id": "REQ-22",
-        "summary": "Add a dedicated Shopify Products Import panel within the Admin page (as a new tab or sub-section alongside Products and Site Settings). When Shopify integration is enabled and credentials are configured, display a UI that allows the admin to view a list of products fetched from the configured Shopify Storefront API (using the stored domain and access token via the Shopify Storefront GraphQL API from the frontend). Each product entry should show the product title, image thumbnail, price, and an 'Import' button. Clicking 'Import' calls the backend addProduct method to save the product to the ICP store.",
+        "id": "REQ-26",
+        "summary": "Apply the active color scheme site-wide by reading the colorScheme value from getSiteSettings on app load (in App.tsx or a top-level provider) and injecting the corresponding CSS custom property overrides onto the document root. Define CSS variable sets for each predefined scheme that override the existing brand color tokens in frontend/src/index.css (ivory, blush, gold, etc.).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/utils/shopifyApi.ts",
-          "frontend/src/components/ShopifyImportPanel.tsx",
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/pages/AdminPage.tsx"
+          "frontend/src/index.css",
+          "frontend/src/App.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/utils/shopifyApi.ts",
-          "frontend/src/components/ShopifyImportPanel.tsx",
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/pages/AdminPage.tsx"
+          "frontend/src/index.css",
+          "frontend/src/App.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/authorization/MixinAuthorization.mo",
-    "backend/authorization/access-control.mo",
     "backend/main.mo",
     "backend/migration.mo",
     "build-request.json",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/src/App.tsx",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
-    "frontend/src/components/ShopifyImportPanel.tsx",
     "frontend/src/components/SiteSettingsSection.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useActor.ts",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/AdminPage.tsx",
+    "frontend/src/index.css",
     "frontend/src/types.ts",
-    "frontend/src/utils/shopifyApi.ts",
-    "frontend/src/utils/urlParams.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

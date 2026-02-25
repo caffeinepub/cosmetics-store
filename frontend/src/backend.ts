@@ -98,6 +98,7 @@ export interface SiteSettings {
     shopifyStorefrontAccessToken: string;
     heroBannerImageUrl: string;
     shopifyEnabled: boolean;
+    colorScheme: string;
 }
 export interface Product {
     id: bigint;

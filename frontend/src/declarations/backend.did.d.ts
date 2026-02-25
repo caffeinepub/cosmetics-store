@@ -29,6 +29,7 @@ export interface SiteSettings {
   'shopifyStorefrontAccessToken' : string,
   'heroBannerImageUrl' : string,
   'shopifyEnabled' : boolean,
+  'colorScheme' : string,
 }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |

@@ -1,12 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Add a Shopify integration interface to the Glow Shop admin panel, allowing admins to configure Shopify credentials and import products from a Shopify Storefront into the ICP store.
+**Goal:** Add color scheme selection to the Admin Site Settings, allowing the store owner to choose from predefined palettes that apply site-wide.
 
 **Planned changes:**
-- Extend the backend `SiteSettings` record with `shopifyStoreDomain` (Text), `shopifyStorefrontAccessToken` (Text), and `shopifyEnabled` (Bool) fields; update `getSiteSettings` and `updateSiteSettings` accordingly
-- Update the frontend `SiteSettings` TypeScript type and `updateSiteSettings` mutation payload to include the three new Shopify fields
-- Add a "Shopify Integration" subsection to the Site Settings tab in the Admin page with an enable/disable toggle, a Store Domain input, and a Storefront Access Token input; pre-populate from `getSiteSettings` and save via `updateSiteSettings` with success/error toasts
-- Add a "Shopify Import" tab/panel in the Admin page that fetches products from the Shopify Storefront GraphQL API (using stored credentials) and displays each product with title, thumbnail, and price; includes an "Import" button per product that calls the backend `addProduct` method with success/error toasts; shows a configuration prompt when Shopify is disabled or credentials are missing
+- Extend the backend `SiteSettings` record in `main.mo` with a `colorScheme` Text field; update `getSiteSettings` and `updateSiteSettings` to include it
+- Update the `SiteSettings` TypeScript interface and query/mutation hooks to include `colorScheme: string`
+- Add a "Color Scheme" subsection to the Admin Site Settings tab with at least 4 selectable swatches (e.g., "Default (Ivory & Gold)", "Rose Petal", "Midnight Luxe", "Sage & Cream"), each visually previewing its palette; save via `updateSiteSettings` with success/error toasts
+- On app load, read the active `colorScheme` from `getSiteSettings` and inject corresponding CSS custom property overrides onto the document root, covering navigation, hero banner, buttons, and product cards
 
-**User-visible outcome:** Admins can enable Shopify integration, enter their store domain and access token in Site Settings, then browse and import products from their Shopify storefront directly into the ICP product catalog via a dedicated Shopify Import panel.
+**User-visible outcome:** Admins can pick a color scheme in Site Settings, save it, and see the entire storefront update to the chosen palette; the default ivory/blush/gold theme is preserved with no visual regression.

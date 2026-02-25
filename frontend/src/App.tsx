@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { RouterProvider, createRouter, createRoute, createRootRoute, Outlet } from '@tanstack/react-router';
 import { Toaster } from '@/components/ui/sonner';
 import Layout from './components/Layout';
@@ -8,11 +9,25 @@ import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import AdminPage from './pages/AdminPage';
+import { useGetSiteSettings } from './hooks/useQueries';
+
+// Inner component that applies the color scheme from site settings
+function ColorSchemeApplier() {
+  const { data: settings } = useGetSiteSettings();
+
+  useEffect(() => {
+    const scheme = settings?.colorScheme || 'default';
+    document.documentElement.setAttribute('data-color-scheme', scheme);
+  }, [settings?.colorScheme]);
+
+  return null;
+}
 
 // Root route with layout
 const rootRoute = createRootRoute({
   component: () => (
     <>
+      <ColorSchemeApplier />
       <Layout />
       <Toaster position="top-right" richColors />
     </>

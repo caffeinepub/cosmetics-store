@@ -32,6 +32,7 @@ export const SiteSettings = IDL.Record({
   'shopifyStorefrontAccessToken' : IDL.Text,
   'heroBannerImageUrl' : IDL.Text,
   'shopifyEnabled' : IDL.Bool,
+  'colorScheme' : IDL.Text,
 });
 
 export const idlService = IDL.Service({
@@ -76,6 +77,7 @@ export const idlFactory = ({ IDL }) => {
     'shopifyStorefrontAccessToken' : IDL.Text,
     'heroBannerImageUrl' : IDL.Text,
     'shopifyEnabled' : IDL.Bool,
+    'colorScheme' : IDL.Text,
   });
   
   return IDL.Service({

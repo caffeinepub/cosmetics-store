@@ -5,10 +5,11 @@ import Map "mo:core/Map";
 import Iter "mo:core/Iter";
 import Principal "mo:core/Principal";
 import Migration "migration";
+
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
-// Include migration functionality
+// Persistent actor with migration and authorization
 (with migration = Migration.run)
 actor {
   type SiteSettings = {
@@ -20,6 +21,7 @@ actor {
     shopifyStoreDomain : Text;
     shopifyStorefrontAccessToken : Text;
     shopifyEnabled : Bool;
+    colorScheme : Text; // New field for color scheme
   };
 
   type Product = {
@@ -55,6 +57,7 @@ actor {
     shopifyStoreDomain = "";
     shopifyStorefrontAccessToken = "";
     shopifyEnabled = false;
+    colorScheme = "default"; // Default color scheme
   };
 
   // Products management
