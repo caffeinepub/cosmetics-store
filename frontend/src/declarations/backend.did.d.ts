@@ -10,42 +10,12 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export interface CartItem { 'productId' : bigint, 'quantity' : bigint }
-export interface Order {
-  'id' : bigint,
-  'status' : string,
-  'timestamp' : Time,
-  'items' : Array<CartItem>,
-  'totalPrice' : bigint,
-}
-export interface Product {
-  'id' : bigint,
-  'featured' : boolean,
-  'name' : string,
-  'description' : string,
-  'stock' : bigint,
-  'imageUrl' : string,
-  'category' : string,
-  'price' : bigint,
-}
-export interface ShoppingCart { 'items' : Array<CartItem> }
-export type Time = bigint;
 export interface _SERVICE {
   'addProduct' : ActorMethod<
     [string, string, string, bigint, string, bigint, boolean],
     bigint
   >,
-  'addToCart' : ActorMethod<[string, bigint, bigint], undefined>,
-  'clearCart' : ActorMethod<[string], undefined>,
   'deleteProduct' : ActorMethod<[bigint], undefined>,
-  'getCart' : ActorMethod<[string], ShoppingCart>,
-  'getFeaturedProducts' : ActorMethod<[], Array<Product>>,
-  'getOrders' : ActorMethod<[], Array<Order>>,
-  'getProductById' : ActorMethod<[bigint], [] | [Product]>,
-  'getProducts' : ActorMethod<[], Array<Product>>,
-  'placeOrder' : ActorMethod<[string], bigint>,
-  'removeFromCart' : ActorMethod<[string, bigint], undefined>,
-  'updateCartItem' : ActorMethod<[string, bigint, bigint], undefined>,
   'updateProduct' : ActorMethod<
     [bigint, string, string, string, bigint, string, bigint, boolean],
     undefined

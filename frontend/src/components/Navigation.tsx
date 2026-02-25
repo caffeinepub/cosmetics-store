@@ -1,8 +1,7 @@
 import { Link, useLocation } from '@tanstack/react-router';
-import { ShoppingBag, Sparkles, Menu, X } from 'lucide-react';
+import { ShoppingBag, Sparkles, Menu, X, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { useGetCart } from '../hooks/useQueries';
-import { Badge } from '@/components/ui/badge';
 
 export default function Navigation() {
   const location = useLocation();
@@ -14,6 +13,7 @@ export default function Navigation() {
   const navLinks = [
     { to: '/', label: 'Home' },
     { to: '/shop', label: 'Shop' },
+    { to: '/admin', label: 'Admin' },
   ];
 
   const isActive = (path: string) => {
@@ -41,12 +41,13 @@ export default function Navigation() {
               <Link
                 key={link.to}
                 to={link.to}
-                className={`font-sans text-sm font-medium tracking-widest uppercase transition-colors duration-200 ${
+                className={`font-sans text-sm font-medium tracking-widest uppercase transition-colors duration-200 flex items-center gap-1.5 ${
                   isActive(link.to)
                     ? 'text-rose-dark border-b-2 border-gold pb-0.5'
                     : 'text-foreground/70 hover:text-rose-dark'
                 }`}
               >
+                {link.to === '/admin' && <Settings className="w-3.5 h-3.5" />}
                 {link.label}
               </Link>
             ))}
@@ -86,12 +87,13 @@ export default function Navigation() {
                 key={link.to}
                 to={link.to}
                 onClick={() => setMobileOpen(false)}
-                className={`block px-4 py-3 rounded-lg text-sm font-medium tracking-widest uppercase transition-colors ${
+                className={`flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium tracking-widest uppercase transition-colors ${
                   isActive(link.to)
                     ? 'bg-blush text-rose-dark'
                     : 'text-foreground/70 hover:bg-blush/50 hover:text-rose-dark'
                 }`}
               >
+                {link.to === '/admin' && <Settings className="w-3.5 h-3.5" />}
                 {link.label}
               </Link>
             ))}

@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router';
 import { ShoppingBag, Eye } from 'lucide-react';
 import { useAddToCart } from '../hooks/useQueries';
 import { getProductImage } from '../utils/imageHelpers';
-import type { Product } from '../backend';
+import type { Product } from '../types';
 import { toast } from 'sonner';
 
 interface ProductCardProps {

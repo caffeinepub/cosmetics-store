@@ -8,47 +8,13 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
-export const CartItem = IDL.Record({
-  'productId' : IDL.Nat,
-  'quantity' : IDL.Nat,
-});
-export const ShoppingCart = IDL.Record({ 'items' : IDL.Vec(CartItem) });
-export const Product = IDL.Record({
-  'id' : IDL.Nat,
-  'featured' : IDL.Bool,
-  'name' : IDL.Text,
-  'description' : IDL.Text,
-  'stock' : IDL.Nat,
-  'imageUrl' : IDL.Text,
-  'category' : IDL.Text,
-  'price' : IDL.Nat,
-});
-export const Time = IDL.Int;
-export const Order = IDL.Record({
-  'id' : IDL.Nat,
-  'status' : IDL.Text,
-  'timestamp' : Time,
-  'items' : IDL.Vec(CartItem),
-  'totalPrice' : IDL.Nat,
-});
-
 export const idlService = IDL.Service({
   'addProduct' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Text, IDL.Nat, IDL.Text, IDL.Nat, IDL.Bool],
       [IDL.Nat],
       [],
     ),
-  'addToCart' : IDL.Func([IDL.Text, IDL.Nat, IDL.Nat], [], []),
-  'clearCart' : IDL.Func([IDL.Text], [], []),
   'deleteProduct' : IDL.Func([IDL.Nat], [], []),
-  'getCart' : IDL.Func([IDL.Text], [ShoppingCart], ['query']),
-  'getFeaturedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
-  'getOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
-  'getProductById' : IDL.Func([IDL.Nat], [IDL.Opt(Product)], ['query']),
-  'getProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
-  'placeOrder' : IDL.Func([IDL.Text], [IDL.Nat], []),
-  'removeFromCart' : IDL.Func([IDL.Text, IDL.Nat], [], []),
-  'updateCartItem' : IDL.Func([IDL.Text, IDL.Nat, IDL.Nat], [], []),
   'updateProduct' : IDL.Func(
       [
         IDL.Nat,
@@ -68,44 +34,13 @@ export const idlService = IDL.Service({
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
-  const CartItem = IDL.Record({ 'productId' : IDL.Nat, 'quantity' : IDL.Nat });
-  const ShoppingCart = IDL.Record({ 'items' : IDL.Vec(CartItem) });
-  const Product = IDL.Record({
-    'id' : IDL.Nat,
-    'featured' : IDL.Bool,
-    'name' : IDL.Text,
-    'description' : IDL.Text,
-    'stock' : IDL.Nat,
-    'imageUrl' : IDL.Text,
-    'category' : IDL.Text,
-    'price' : IDL.Nat,
-  });
-  const Time = IDL.Int;
-  const Order = IDL.Record({
-    'id' : IDL.Nat,
-    'status' : IDL.Text,
-    'timestamp' : Time,
-    'items' : IDL.Vec(CartItem),
-    'totalPrice' : IDL.Nat,
-  });
-  
   return IDL.Service({
     'addProduct' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, IDL.Nat, IDL.Text, IDL.Nat, IDL.Bool],
         [IDL.Nat],
         [],
       ),
-    'addToCart' : IDL.Func([IDL.Text, IDL.Nat, IDL.Nat], [], []),
-    'clearCart' : IDL.Func([IDL.Text], [], []),
     'deleteProduct' : IDL.Func([IDL.Nat], [], []),
-    'getCart' : IDL.Func([IDL.Text], [ShoppingCart], ['query']),
-    'getFeaturedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
-    'getOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
-    'getProductById' : IDL.Func([IDL.Nat], [IDL.Opt(Product)], ['query']),
-    'getProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
-    'placeOrder' : IDL.Func([IDL.Text], [IDL.Nat], []),
-    'removeFromCart' : IDL.Func([IDL.Text, IDL.Nat], [], []),
-    'updateCartItem' : IDL.Func([IDL.Text, IDL.Nat, IDL.Nat], [], []),
     'updateProduct' : IDL.Func(
         [
           IDL.Nat,

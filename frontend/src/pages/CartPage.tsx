@@ -4,7 +4,7 @@ import { ShoppingBag, ArrowRight, ShoppingCart } from 'lucide-react';
 import { useGetCart, useGetProducts } from '../hooks/useQueries';
 import CartItem from '../components/CartItem';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { Product } from '../backend';
+import type { Product } from '../types';
 
 export default function CartPage() {
   const { data: cart, isLoading: cartLoading } = useGetCart();

@@ -1,229 +1,57 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Glow Shop - Cosmetics E-Commerce Frontend",
+  "title": "Build Admin Panel for Product Management",
   "requirements": [
     {
-      "id": "REQ-4",
-      "summary": "Build Homepage with hero banner, featured products section, and promotional banner",
+      "id": "REQ-11",
+      "summary": "Add a protected Admin page at /admin with product management interface including product list table, add/edit/delete functionality with forms and confirmation prompts",
       "acceptanceCriteria": [
-        "Hero banner is displayed at the top with a headline and CTA.",
-        "Featured products are fetched from the backend and displayed in a grid.",
-        "Promotional section is visible below the hero."
+        "Navigating to /admin renders the Admin Panel page",
+        "All existing products are listed in a table with name, category, price, stock, and featured columns",
+        "Clicking 'Add Product' opens a form/modal with all required fields (name, category, description, price, imageUrl, stock, featured)",
+        "Submitting the Add Product form calls the backend addProduct method and the product list refreshes",
+        "Clicking 'Edit' on a product pre-fills the form with that product's current values",
+        "Submitting the Edit form calls the backend updateProduct method and the list reflects the changes",
+        "Clicking 'Delete' on a product shows a confirmation prompt; confirming calls the backend deleteProduct method and removes the product from the list",
+        "Form validation prevents submission with missing required fields",
+        "Success and error states are communicated via toast notifications"
       ],
       "file_operations": [
-        {
-          "path": "frontend/src/pages/HomePage.tsx",
-          "operation": "create",
-          "description": "Create Homepage component with hero banner section using frontend/public/assets/generated/hero-banner.dim_1400x500.png, featured products grid fetching from backend getFeaturedProducts method, and promotional banner section using frontend/public/assets/generated/promo-banner.dim_1400x120.png. Include headline, CTA button linking to /shop, and responsive product grid."
-        },
-        {
-          "path": "frontend/src/components/HeroBanner.tsx",
-          "operation": "create",
-          "description": "Create reusable HeroBanner component displaying the hero image from frontend/public/assets/generated/hero-banner.dim_1400x500.png with overlay, headline text, and CTA button. Apply luxurious styling with blush/ivory tones and elegant typography."
-        },
-        {
-          "path": "frontend/src/components/FeaturedProducts.tsx",
-          "operation": "create",
-          "description": "Create FeaturedProducts component that calls backend getFeaturedProducts method and displays products in a responsive grid. Each product card shows image, name, category, price, and Add to Cart button with smooth hover transitions."
-        },
-        {
-          "path": "frontend/src/components/PromoBanner.tsx",
-          "operation": "create",
-          "description": "Create PromoBanner component displaying promotional content with frontend/public/assets/generated/promo-banner.dim_1400x120.png as background. Include marquee-style text highlighting current offers with champagne/gold accent styling."
-        },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Update App component to add route for HomePage at / path. Wrap route with Layout component to ensure consistent navigation and styling."
-        }
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "summary": "Build Product Catalog page with filtering and product grid",
-      "acceptanceCriteria": [
-        "All products are listed in a responsive grid layout.",
-        "Category and price range filters are functional.",
-        "Each card has image, name, category, price, and Add to Cart button.",
-        "Adding to cart calls the backend addToCart method."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/ShopPage.tsx",
-          "operation": "create",
-          "description": "Create ShopPage component that fetches all products via backend getProducts method. Display products in responsive grid with filtering controls for category and price range. Each product card includes image (using frontend/public/assets/generated/product-placeholder.dim_600x600.png as fallback), name, category, price, and Add to Cart button that calls backend addToCart with session ID from session utility."
-        },
-        {
-          "path": "frontend/src/components/ProductCard.tsx",
-          "operation": "create",
-          "description": "Create reusable ProductCard component displaying product image, name, category, price with elegant styling and smooth hover effects. Include Add to Cart button that accepts product and quantity, calls backend addToCart with session ID, and shows feedback. Use champagne gold accents and blush rose borders on hover. Use frontend/public/assets/generated/product-placeholder.dim_600x600.png as fallback image."
-        },
-        {
-          "path": "frontend/src/components/ProductFilters.tsx",
-          "operation": "create",
-          "description": "Create ProductFilters component with dropdown/checkbox controls for category selection and price range slider. Apply filter state to product list in ShopPage. Style with ivory/blush palette and smooth transitions."
-        },
-        {
-          "path": "frontend/src/utils/session.ts",
-          "operation": "create",
-          "description": "Create session utility that generates or retrieves a session ID from localStorage. Export getSessionId function that creates a UUID on first call and stores it in localStorage for subsequent retrievals. This session ID will be used for all backend cart operations."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Update App component to add route for ShopPage at /shop path. Wrap route with Layout component."
-        }
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "summary": "Build Product Detail page with full product information and quantity selector",
-      "acceptanceCriteria": [
-        "Navigating to a product detail page shows all product fields.",
-        "Quantity selector allows selecting how many to add.",
-        "Add to Cart button is disabled when stock is 0.",
-        "Page is accessible via a route such as /product/:id."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/ProductDetailPage.tsx",
-          "operation": "create",
-          "description": "Create ProductDetailPage component accessible at /product/:id route. Fetch product data via backend getProductById method. Display large product image (with frontend/public/assets/generated/product-placeholder.dim_600x600.png fallback), name, category, full description, price, and stock status. Include quantity selector and Add to Cart button that calls backend addToCart with session ID. Disable button when stock is 0. Apply luxurious layout with generous whitespace and elegant typography."
-        },
-        {
-          "path": "frontend/src/components/QuantitySelector.tsx",
-          "operation": "create",
-          "description": "Create reusable QuantitySelector component with increment/decrement buttons and numeric input. Enforce min value of 1 and max based on available stock. Style with champagne gold buttons and smooth hover transitions."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Update App component to add route for ProductDetailPage at /product/:id path. Wrap route with Layout component."
-        }
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "summary": "Build Shopping Cart page displaying cart items with controls and subtotal",
-      "acceptanceCriteria": [
-        "All cart items are listed with image, name, price, and quantity.",
-        "Quantity can be increased/decreased per item.",
-        "Items can be removed from the cart.",
-        "Subtotal is calculated and displayed.",
-        "Proceed to Checkout button is present."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/CartPage.tsx",
-          "operation": "create",
-          "description": "Create CartPage component that fetches cart via backend getCart method using session ID from session utility. Display cart items with product image, name, unit price, quantity controls, and line total. Include Remove button per item calling backend removeFromCart. Show calculated subtotal. Include Proceed to Checkout button linking to /checkout. Handle empty cart state with message and link back to /shop. Apply clean layout with blush/ivory styling."
-        },
-        {
-          "path": "frontend/src/components/CartItem.tsx",
-          "operation": "create",
-          "description": "Create CartItem component displaying individual cart line item with product image, name, unit price, quantity controls (using QuantitySelector), line total, and Remove button. Quantity changes call backend updateCartItem with session ID. Remove button calls backend removeFromCart with session ID. Style with elegant spacing and hover effects."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Update App component to add route for CartPage at /cart path. Wrap route with Layout component."
-        }
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "summary": "Build Checkout page with order summary and confirmation flow",
-      "acceptanceCriteria": [
-        "Order summary lists items and total before placement.",
-        "Clicking Place Order calls the backend and returns an order ID.",
-        "Cart is cleared after successful order.",
-        "A confirmation message with the order ID is shown."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/CheckoutPage.tsx",
-          "operation": "create",
-          "description": "Create CheckoutPage component displaying order summary with items and total from backend getCart using session ID. Include Place Order button that calls backend placeOrder method with session ID, then calls backend clearCart with session ID. On success, navigate to /order-confirmation with order ID in state. Show loading state during order placement. Apply elegant styling with ivory/blush palette."
-        },
-        {
-          "path": "frontend/src/pages/OrderConfirmationPage.tsx",
-          "operation": "create",
-          "description": "Create OrderConfirmationPage component displaying success message with order ID received from CheckoutPage navigation state. Include link to continue shopping (/shop). Style with celebratory yet elegant design using champagne gold accents and generous whitespace."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Update App component to add routes for CheckoutPage at /checkout path and OrderConfirmationPage at /order-confirmation path. Wrap routes with Layout component."
-        }
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "summary": "Apply luxurious visual theme with sticky navigation throughout the site",
-      "acceptanceCriteria": [
-        "Color palette uses ivory/blush/gold tones consistently across all pages.",
-        "Headings use an elegant serif or refined font style.",
-        "Navigation bar is sticky and shows cart item count.",
-        "Cards and buttons have smooth hover effects.",
-        "Layout uses consistent spacing and whitespace."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Add custom CSS variables for luxurious color palette: ivory (#FAF7F5), blush rose (#F5D5CB), champagne gold (#D4AF37), and warm neutrals. Define elegant serif font family for headings (e.g., Playfair Display, Lora) via @import from Google Fonts. Add smooth transition defaults and global spacing rules for generous whitespace. Ensure existing Tailwind directives remain intact."
-        },
-        {
-          "path": "frontend/tailwind.config.js",
-          "operation": "modify",
-          "description": "Extend Tailwind theme with custom colors matching the luxurious palette (ivory, blush, champagne, warmNeutral shades). Add custom font family for serif headings. Configure spacing scale for generous whitespace. Add smooth transition timing functions."
-        },
-        {
-          "path": "frontend/src/components/Layout.tsx",
-          "operation": "create",
-          "description": "Create Layout component wrapping all pages with sticky top navigation bar. Navigation includes brand logo (Glow Shop), links to Home (/), Shop (/shop), and Cart (/cart) with cart icon and item count badge fetched from backend getCart using session ID. Apply blush/ivory header styling with champagne gold accents. Include smooth scroll behavior and consistent page margins."
+          "description": "Add a new route for /admin that renders the AdminPage component, nested under the root layout route"
         },
         {
           "path": "frontend/src/components/Navigation.tsx",
+          "operation": "modify",
+          "description": "Add an 'Admin' navigation link in the desktop and mobile navigation menus that points to /admin"
+        },
+        {
+          "path": "frontend/src/pages/AdminPage.tsx",
           "operation": "create",
-          "description": "Create Navigation component for sticky top nav bar with brand logo, navigation links (Home, Shop, Cart), and cart icon with item count badge. Fetch cart count via backend getCart method using session ID. Style with ivory background, blush borders, champagne gold hover effects, and elegant typography. Ensure sticky positioning and z-index for proper layering."
-        }
-      ]
-    },
-    {
-      "id": "REQ-10",
-      "summary": "Render generated static image assets in Homepage and product views",
-      "acceptanceCriteria": [
-        "Hero banner image is loaded from frontend/public/assets/generated.",
-        "Product placeholder images are served from the same directory.",
-        "No broken image links on any page."
-      ],
-      "file_operations": [
+          "description": "Create the Admin Panel page component that displays a product management interface with a heading, an 'Add Product' button, and the ProductTable component. Handle loading and error states when fetching products using the useProducts query hook"
+        },
         {
-          "path": "frontend/src/utils/imageHelpers.ts",
+          "path": "frontend/src/components/ProductTable.tsx",
           "operation": "create",
-          "description": "Create imageHelpers utility providing functions to resolve static image paths from frontend/public/assets/generated. Export getHeroImage returning '/assets/generated/hero-banner.dim_1400x500.png', getProductPlaceholder returning '/assets/generated/product-placeholder.dim_600x600.png', and getPromoBanner returning '/assets/generated/promo-banner.dim_1400x120.png'. Include fallback logic for missing images."
+          "description": "Create a table component that displays all products with columns for name, category, price, stock, featured status, and action buttons (Edit, Delete). Each row includes Edit and Delete buttons that trigger the appropriate modals/dialogs. Use shadcn/ui Table components for consistent styling"
         },
         {
-          "path": "frontend/src/components/HeroBanner.tsx",
-          "operation": "modify",
-          "description": "Update HeroBanner component to use imageHelpers.getHeroImage() for hero banner image source, ensuring frontend/public/assets/generated/hero-banner.dim_1400x500.png is rendered correctly with proper alt text and responsive sizing."
+          "path": "frontend/src/components/ProductFormDialog.tsx",
+          "operation": "create",
+          "description": "Create a reusable dialog component for adding and editing products. Include form fields for name (text), category (select or text), description (textarea), price (number), imageUrl (text), stock (number), and featured (checkbox). Implement form validation to ensure required fields are filled. Use controlled inputs with React state. Accept props for mode ('add' or 'edit'), initial product data (for edit mode), and callbacks for submit and cancel. On submit, call the appropriate backend method (addProduct or updateProduct) via mutation hooks and show toast notifications for success or error"
         },
         {
-          "path": "frontend/src/components/PromoBanner.tsx",
-          "operation": "modify",
-          "description": "Update PromoBanner component to use imageHelpers.getPromoBanner() for background image, ensuring frontend/public/assets/generated/promo-banner.dim_1400x120.png is applied as CSS background with proper positioning and sizing."
+          "path": "frontend/src/components/DeleteProductDialog.tsx",
+          "operation": "create",
+          "description": "Create a confirmation dialog component that displays when the user clicks Delete on a product. Show the product name and ask for confirmation before calling the backend deleteProduct method via mutation hook. Display success or error toast notifications after the operation completes"
         },
         {
-          "path": "frontend/src/components/ProductCard.tsx",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Update ProductCard component to use imageHelpers.getProductPlaceholder() as fallback when product.imageUrl is empty or invalid, ensuring frontend/public/assets/generated/product-placeholder.dim_600x600.png is used with proper alt text and responsive sizing."
-        },
-        {
-          "path": "frontend/src/pages/ProductDetailPage.tsx",
-          "operation": "modify",
-          "description": "Update ProductDetailPage component to use imageHelpers.getProductPlaceholder() as fallback for product image, ensuring frontend/public/assets/generated/product-placeholder.dim_600x600.png is displayed when product.imageUrl is unavailable."
+          "description": "Add three new mutation hooks: useAddProduct (calls backend addProduct method with product fields and invalidates products query on success), useUpdateProduct (calls backend updateProduct method with product ID and updated fields and invalidates products query on success), and useDeleteProduct (calls backend deleteProduct method with product ID and invalidates products query on success). Each mutation should handle success and error states appropriately"
         }
       ]
     }

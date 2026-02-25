@@ -1,11 +1,10 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 3,
+  "projectStateVersion": 5,
   "summary": "E-commerce website for selling cosmetics products.",
   "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Elegant cosmetics hero banner with soft blush and ivory tones, gold accent light streaks, and artfully arranged makeup and skincare products on a marble surface (hero-banner.dim_1400x500.png)\n- Minimalist cosmetics product placeholder showing a sleek bottle silhouette on a blush-pink background with soft shadows (product-placeholder.dim_600x600.png)\n- Promotional strip background with a warm champagne gradient and scattered rose petals texture (promo-banner.dim_1400x120.png)",
   "existing_features": [
     {
       "id": "feature-build-a-homepage-with-a-full-width-hero-banner-section-with-a-headline-and-call-to-action-button-a-featured-products-section-showing-featured-products-in-a-responsive-grid-and-a-promotional-banner-or-marquee-strip-highlighting-offers",
@@ -62,6 +61,14 @@
         "REQ-10"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-a-protected-admin-page-route-admin-accessible-from-the-navigation-or-a-direct-url-the-page-must-include-a-product-management-interface-with-a-table-list-of-all-existing-products-showing-name-category-price-stock-and-featured-status-an-add-product-form-modal-with-fields-for-name-category-description-price-imageurl-stock-quantity-and-featured-flag-an-edit-action-per-product-that-pre-fills-the-form-with-existing-values-and-a-delete-action-per-product-with-a-confirmation-prompt",
+      "title": "Add a protected Admin page (route: /admin) accessible from the navigation (or a direct URL). The page must include a product management interface with: a table/list of all existing products showing name, category, price, stock, and featured status; an 'Add Product' form/modal with fields for name, category, description, price, imageUrl, stock quantity, and featured flag; an 'Edit' action per product that pre-fills the form with existing values; and a 'Delete' action per product with a confirmation prompt.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -110,6 +117,20 @@
       "summary": "Implement a backend orders model. Provide a placeOrder method that accepts a cart, creates an order record with fields: id, items, totalPrice, status (pending/completed), and timestamp. Provide a getOrders query to retrieve all orders.",
       "reqIds": [
         "REQ-3"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Build an Admin Panel for managing products: add, edit, and delete products (name, category, description, price, stock, image URL, featured flag) directly from the website UI.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Ensure the backend exposes addProduct, updateProduct, and deleteProduct methods that the Admin Panel frontend can call. The addProduct method accepts all product fields (name, category, description, price, imageUrl, stock, featured) and returns the new product ID. The updateProduct method accepts a product ID and updated fields. The deleteProduct method accepts a product ID and removes the product.",
+      "reqIds": [
+        "REQ-12"
       ],
       "status": "pending"
     }

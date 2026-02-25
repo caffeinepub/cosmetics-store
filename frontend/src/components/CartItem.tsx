@@ -4,7 +4,7 @@ import { Trash2 } from 'lucide-react';
 import { useRemoveFromCart, useUpdateCartItem } from '../hooks/useQueries';
 import { getProductImage } from '../utils/imageHelpers';
 import QuantitySelector from './QuantitySelector';
-import type { Product } from '../backend';
+import type { Product } from '../types';
 import { toast } from 'sonner';
 
 interface CartItemProps {
