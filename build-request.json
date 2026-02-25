@@ -1,0 +1,215 @@
+{
+  "kind": "build_request",
+  "title": "Cosmetics E-Commerce Website",
+  "projectName": "Glow Shop",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Implement a backend data model and actor methods for cosmetics products, including fields for: id, name, category, description, price, imageUrl, stock quantity, and featured flag. Provide CRUD operations: addProduct, getProducts, getProductById, updateProduct, deleteProduct, and a query to fetch featured products.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "create a website for selling cosmetics"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Products can be created, read, updated, and deleted via backend methods.",
+        "Products have all required fields including category, price, stock, and featured flag.",
+        "Featured products can be queried separately."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Implement a backend shopping cart model: each cart is keyed by a session/user identifier, containing line items (productId, quantity). Provide methods: addToCart, removeFromCart, updateCartItem, getCart, and clearCart.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "create a website for selling cosmetics"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Cart items can be added, updated, and removed.",
+        "The current cart can be retrieved by session/user key.",
+        "Cart can be cleared after checkout."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Implement a backend orders model. Provide a placeOrder method that accepts a cart, creates an order record with fields: id, items, totalPrice, status (pending/completed), and timestamp. Provide a getOrders query to retrieve all orders.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "create a website for selling cosmetics"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Orders are created from cart contents with a total price calculation.",
+        "Each order has a unique ID, item list, total, status, and timestamp.",
+        "Orders can be retrieved via a query method."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Build a Homepage with: a full-width hero banner section with a headline and call-to-action button, a 'Featured Products' section showing featured products in a responsive grid, and a promotional banner or marquee strip highlighting offers.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "create a website for selling cosmetics"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Hero banner is displayed at the top with a headline and CTA.",
+        "Featured products are fetched from the backend and displayed in a grid.",
+        "Promotional section is visible below the hero."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Build a Product Catalog page that displays all cosmetics products in a responsive grid. Include filter controls for product category and price range. Each product card shows the product image, name, category, price, and an 'Add to Cart' button.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "create a website for selling cosmetics"
+        ]
+      },
+      "acceptanceCriteria": [
+        "All products are listed in a responsive grid layout.",
+        "Category and price range filters are functional.",
+        "Each card has image, name, category, price, and Add to Cart button.",
+        "Adding to cart calls the backend addToCart method."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Build a Product Detail page accessible from product cards. Display the product's image, name, category, full description, price, stock status, and an 'Add to Cart' button with quantity selector.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "create a website for selling cosmetics"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Navigating to a product detail page shows all product fields.",
+        "Quantity selector allows selecting how many to add.",
+        "Add to Cart button is disabled when stock is 0.",
+        "Page is accessible via a route such as /product/:id."
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Build a Shopping Cart page that displays current cart line items with product name, image, unit price, quantity controls, and line total. Show the cart subtotal, and provide a 'Proceed to Checkout' button and a 'Remove' option per item.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "create a website for selling cosmetics"
+        ]
+      },
+      "acceptanceCriteria": [
+        "All cart items are listed with image, name, price, and quantity.",
+        "Quantity can be increased/decreased per item.",
+        "Items can be removed from the cart.",
+        "Subtotal is calculated and displayed.",
+        "Proceed to Checkout button is present."
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Build a Checkout page with a simple order summary and a 'Place Order' button. On confirmation, call the backend placeOrder method, clear the cart, and display an order confirmation message with the order ID.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "create a website for selling cosmetics"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Order summary lists items and total before placement.",
+        "Clicking Place Order calls the backend and returns an order ID.",
+        "Cart is cleared after successful order.",
+        "A confirmation message with the order ID is shown."
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "text": "Apply a luxurious, clean visual theme throughout the site: a soft warm neutral palette (ivory, blush rose, champagne gold accents), elegant serif headings, smooth hover transitions on cards and buttons, generous whitespace, and a sticky top navigation bar with the brand logo, navigation links (Home, Shop, Cart), and a cart icon with item count badge.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "create a website for selling cosmetics"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Color palette uses ivory/blush/gold tones consistently across all pages.",
+        "Headings use an elegant serif or refined font style.",
+        "Navigation bar is sticky and shows cart item count.",
+        "Cards and buttons have smooth hover effects.",
+        "Layout uses consistent spacing and whitespace."
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "text": "Render the generated static image assets (hero banner, product placeholder images) from frontend/public/assets/generated and use them in the Homepage hero, product cards, and detail pages.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "create a website for selling cosmetics"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Hero banner image is loaded from frontend/public/assets/generated.",
+        "Product placeholder images are served from the same directory.",
+        "No broken image links on any page."
+      ]
+    }
+  ],
+  "constraints": [
+    "All backend logic must reside in a single Motoko actor in backend/main.mo.",
+    "Do not modify any files under frontend/src/hooks/ or frontend/src/components/ui.",
+    "No external payment or third-party API integrations."
+  ],
+  "nonGoals": [
+    "User authentication or account management.",
+    "Real payment processing.",
+    "Product reviews or ratings system.",
+    "Admin dashboard for managing products via the UI.",
+    "Real-time inventory sync or WebSocket features."
+  ],
+  "imageRequirements": {
+    "required": [
+      "Elegant cosmetics hero banner with soft blush and ivory tones, gold accent light streaks, and artfully arranged makeup and skincare products on a marble surface (hero-banner.dim_1400x500.png)",
+      "Minimalist cosmetics product placeholder showing a sleek bottle silhouette on a blush-pink background with soft shadows (product-placeholder.dim_600x600.png)",
+      "Promotional strip background with a warm champagne gradient and scattered rose petals texture (promo-banner.dim_1400x120.png)"
+    ],
+    "edits": []
+  }
+}

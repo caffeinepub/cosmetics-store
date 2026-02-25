@@ -1,0 +1,152 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-build-a-homepage-with-a-full-width-hero-banner-section-with-a-headline-and-call-to-action-button-a-featured-products-section-showing-featured-products-in-a-responsive-grid-and-a-promotional-banner-or-marquee-strip-highlighting-offers",
+      "featureTitle": "Build a Homepage with: a full-width hero banner section with a headline and call-to-action button, a 'Featured Products' section showing featured products in a responsive grid, and a promotional banner or marquee strip highlighting offers.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/FeaturedProducts.tsx",
+        "frontend/src/components/HeroBanner.tsx",
+        "frontend/src/components/PromoBanner.tsx",
+        "frontend/src/pages/HomePage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-a-product-catalog-page-that-displays-all-cosmetics-products-in-a-responsive-grid-include-filter-controls-for-product-category-and-price-range-each-product-card-shows-the-product-image-name-category-price-and-an-add-to-cart-button",
+      "featureTitle": "Build a Product Catalog page that displays all cosmetics products in a responsive grid. Include filter controls for product category and price range. Each product card shows the product image, name, category, price, and an 'Add to Cart' button.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/ProductCard.tsx",
+        "frontend/src/components/ProductFilters.tsx",
+        "frontend/src/pages/ShopPage.tsx",
+        "frontend/src/utils/session.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-a-product-detail-page-accessible-from-product-cards-display-the-product-s-image-name-category-full-description-price-stock-status-and-an-add-to-cart-button-with-quantity-selector",
+      "featureTitle": "Build a Product Detail page accessible from product cards. Display the product's image, name, category, full description, price, stock status, and an 'Add to Cart' button with quantity selector.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/QuantitySelector.tsx",
+        "frontend/src/pages/ProductDetailPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-a-shopping-cart-page-that-displays-current-cart-line-items-with-product-name-image-unit-price-quantity-controls-and-line-total-show-the-cart-subtotal-and-provide-a-proceed-to-checkout-button-and-a-remove-option-per-item",
+      "featureTitle": "Build a Shopping Cart page that displays current cart line items with product name, image, unit price, quantity controls, and line total. Show the cart subtotal, and provide a 'Proceed to Checkout' button and a 'Remove' option per item.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/CartItem.tsx",
+        "frontend/src/pages/CartPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-a-checkout-page-with-a-simple-order-summary-and-a-place-order-button-on-confirmation-call-the-backend-placeorder-method-clear-the-cart-and-display-an-order-confirmation-message-with-the-order-id",
+      "featureTitle": "Build a Checkout page with a simple order summary and a 'Place Order' button. On confirmation, call the backend placeOrder method, clear the cart, and display an order confirmation message with the order ID.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/pages/CheckoutPage.tsx",
+        "frontend/src/pages/OrderConfirmationPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-apply-a-luxurious-clean-visual-theme-throughout-the-site-a-soft-warm-neutral-palette-ivory-blush-rose-champagne-gold-accents-elegant-serif-headings-smooth-hover-transitions-on-cards-and-buttons-generous-whitespace-and-a-sticky-top-navigation-bar-with-the-brand-logo-navigation-links-home-shop-cart-and-a-cart-icon-with-item-count-badge",
+      "featureTitle": "Apply a luxurious, clean visual theme throughout the site: a soft warm neutral palette (ivory, blush rose, champagne gold accents), elegant serif headings, smooth hover transitions on cards and buttons, generous whitespace, and a sticky top navigation bar with the brand logo, navigation links (Home, Shop, Cart), and a cart icon with item count badge.",
+      "files": [
+        "frontend/src/components/Layout.tsx",
+        "frontend/src/components/Navigation.tsx",
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-9"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-render-the-generated-static-image-assets-hero-banner-product-placeholder-images-from-frontend-public-assets-generated-and-use-them-in-the-homepage-hero-product-cards-and-detail-pages",
+      "featureTitle": "Render the generated static image assets (hero banner, product placeholder images) from frontend/public/assets/generated and use them in the Homepage hero, product cards, and detail pages.",
+      "files": [
+        "frontend/src/components/HeroBanner.tsx",
+        "frontend/src/components/ProductCard.tsx",
+        "frontend/src/components/PromoBanner.tsx",
+        "frontend/src/pages/ProductDetailPage.tsx",
+        "frontend/src/utils/imageHelpers.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-10"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

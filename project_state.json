@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "E-commerce website for selling cosmetics products.",
+  "architectural_notes": [],
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Elegant cosmetics hero banner with soft blush and ivory tones, gold accent light streaks, and artfully arranged makeup and skincare products on a marble surface (hero-banner.dim_1400x500.png)\n- Minimalist cosmetics product placeholder showing a sleek bottle silhouette on a blush-pink background with soft shadows (product-placeholder.dim_600x600.png)\n- Promotional strip background with a warm champagne gradient and scattered rose petals texture (promo-banner.dim_1400x120.png)",
+  "existing_features": [
+    {
+      "id": "feature-build-a-homepage-with-a-full-width-hero-banner-section-with-a-headline-and-call-to-action-button-a-featured-products-section-showing-featured-products-in-a-responsive-grid-and-a-promotional-banner-or-marquee-strip-highlighting-offers",
+      "title": "Build a Homepage with: a full-width hero banner section with a headline and call-to-action button, a 'Featured Products' section showing featured products in a responsive grid, and a promotional banner or marquee strip highlighting offers.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-a-product-catalog-page-that-displays-all-cosmetics-products-in-a-responsive-grid-include-filter-controls-for-product-category-and-price-range-each-product-card-shows-the-product-image-name-category-price-and-an-add-to-cart-button",
+      "title": "Build a Product Catalog page that displays all cosmetics products in a responsive grid. Include filter controls for product category and price range. Each product card shows the product image, name, category, price, and an 'Add to Cart' button.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-a-product-detail-page-accessible-from-product-cards-display-the-product-s-image-name-category-full-description-price-stock-status-and-an-add-to-cart-button-with-quantity-selector",
+      "title": "Build a Product Detail page accessible from product cards. Display the product's image, name, category, full description, price, stock status, and an 'Add to Cart' button with quantity selector.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-a-shopping-cart-page-that-displays-current-cart-line-items-with-product-name-image-unit-price-quantity-controls-and-line-total-show-the-cart-subtotal-and-provide-a-proceed-to-checkout-button-and-a-remove-option-per-item",
+      "title": "Build a Shopping Cart page that displays current cart line items with product name, image, unit price, quantity controls, and line total. Show the cart subtotal, and provide a 'Proceed to Checkout' button and a 'Remove' option per item.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-a-checkout-page-with-a-simple-order-summary-and-a-place-order-button-on-confirmation-call-the-backend-placeorder-method-clear-the-cart-and-display-an-order-confirmation-message-with-the-order-id",
+      "title": "Build a Checkout page with a simple order summary and a 'Place Order' button. On confirmation, call the backend placeOrder method, clear the cart, and display an order confirmation message with the order ID.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-luxurious-clean-visual-theme-throughout-the-site-a-soft-warm-neutral-palette-ivory-blush-rose-champagne-gold-accents-elegant-serif-headings-smooth-hover-transitions-on-cards-and-buttons-generous-whitespace-and-a-sticky-top-navigation-bar-with-the-brand-logo-navigation-links-home-shop-cart-and-a-cart-icon-with-item-count-badge",
+      "title": "Apply a luxurious, clean visual theme throughout the site: a soft warm neutral palette (ivory, blush rose, champagne gold accents), elegant serif headings, smooth hover transitions on cards and buttons, generous whitespace, and a sticky top navigation bar with the brand logo, navigation links (Home, Shop, Cart), and a cart icon with item count badge.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-render-the-generated-static-image-assets-hero-banner-product-placeholder-images-from-frontend-public-assets-generated-and-use-them-in-the-homepage-hero-product-cards-and-detail-pages",
+      "title": "Render the generated static image assets (hero banner, product placeholder images) from frontend/public/assets/generated and use them in the Homepage hero, product cards, and detail pages.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Product catalog with cosmetics listings",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Shopping cart and checkout flow",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Product detail pages with images and descriptions",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Homepage with featured products and promotions",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Implement a backend data model and actor methods for cosmetics products, including fields for: id, name, category, description, price, imageUrl, stock quantity, and featured flag. Provide CRUD operations: addProduct, getProducts, getProductById, updateProduct, deleteProduct, and a query to fetch featured products.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Implement a backend shopping cart model: each cart is keyed by a session/user identifier, containing line items (productId, quantity). Provide methods: addToCart, removeFromCart, updateCartItem, getCart, and clearCart.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Implement a backend orders model. Provide a placeOrder method that accepts a cart, creates an order record with fields: id, items, totalPrice, status (pending/completed), and timestamp. Provide a getOrders query to retrieve all orders.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Cosmetics Store",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

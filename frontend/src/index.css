@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+
+    /* Ivory / warm white background */
+    --background: 0.975 0.008 75;
+    --foreground: 0.22 0.018 45;
+
+    /* Card: slightly warmer ivory */
+    --card: 0.985 0.006 70;
+    --card-foreground: 0.22 0.018 45;
+
+    /* Popover */
+    --popover: 0.985 0.006 70;
+    --popover-foreground: 0.22 0.018 45;
+
+    /* Primary: deep rose-brown */
+    --primary: 0.38 0.08 20;
+    --primary-foreground: 0.975 0.008 75;
+
+    /* Secondary: blush rose */
+    --secondary: 0.93 0.04 15;
+    --secondary-foreground: 0.38 0.08 20;
+
+    /* Muted: warm light gray */
+    --muted: 0.94 0.012 60;
+    --muted-foreground: 0.52 0.025 45;
+
+    /* Accent: champagne gold */
+    --accent: 0.82 0.09 80;
+    --accent-foreground: 0.22 0.018 45;
+
+    /* Destructive */
+    --destructive: 0.577 0.245 27.325;
+    --destructive-foreground: 0.985 0 0;
+
+    /* Border: soft blush */
+    --border: 0.88 0.03 20;
+    --input: 0.88 0.03 20;
+    --ring: 0.82 0.09 80;
+
+    /* Charts */
+    --chart-1: 0.646 0.222 41.116;
+    --chart-2: 0.6 0.118 184.704;
+    --chart-3: 0.398 0.07 227.392;
+    --chart-4: 0.828 0.189 84.429;
+    --chart-5: 0.769 0.188 70.08;
+
+    /* Sidebar */
+    --sidebar: 0.975 0.008 75;
+    --sidebar-foreground: 0.22 0.018 45;
+    --sidebar-primary: 0.38 0.08 20;
+    --sidebar-primary-foreground: 0.975 0.008 75;
+    --sidebar-accent: 0.93 0.04 15;
+    --sidebar-accent-foreground: 0.38 0.08 20;
+    --sidebar-border: 0.88 0.03 20;
+    --sidebar-ring: 0.82 0.09 80;
+
+    /* Custom brand tokens */
+    --ivory: 0.975 0.008 75;
+    --blush: 0.93 0.04 15;
+    --blush-deep: 0.86 0.07 18;
+    --gold: 0.78 0.12 82;
+    --gold-light: 0.88 0.08 82;
+    --rose-dark: 0.38 0.08 20;
+    --warm-neutral: 0.94 0.012 60;
+  }
+
+  .dark {
+    --background: 0.16 0.018 30;
+    --foreground: 0.95 0.01 70;
+    --card: 0.20 0.018 30;
+    --card-foreground: 0.95 0.01 70;
+    --popover: 0.22 0.018 30;
+    --popover-foreground: 0.95 0.01 70;
+    --primary: 0.88 0.06 75;
+    --primary-foreground: 0.16 0.018 30;
+    --secondary: 0.28 0.03 25;
+    --secondary-foreground: 0.95 0.01 70;
+    --muted: 0.26 0.02 30;
+    --muted-foreground: 0.65 0.02 50;
+    --accent: 0.78 0.12 82;
+    --accent-foreground: 0.16 0.018 30;
+    --destructive: 0.704 0.191 22.216;
+    --destructive-foreground: 0.95 0.01 70;
+    --border: 1 0 0 / 12%;
+    --input: 1 0 0 / 15%;
+    --ring: 0.78 0.12 82;
+    --sidebar: 0.20 0.018 30;
+    --sidebar-foreground: 0.95 0.01 70;
+    --sidebar-primary: 0.88 0.06 75;
+    --sidebar-primary-foreground: 0.16 0.018 30;
+    --sidebar-accent: 0.28 0.03 25;
+    --sidebar-accent-foreground: 0.95 0.01 70;
+    --sidebar-border: 1 0 0 / 12%;
+    --sidebar-ring: 0.78 0.12 82;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer utilities {
+  .font-serif {
+    font-family: 'Playfair Display', serif;
+  }
+  .font-sans-brand {
+    font-family: 'Jost', sans-serif;
+  }
+  .text-gold {
+    color: oklch(var(--gold));
+  }
+  .bg-ivory {
+    background-color: oklch(var(--ivory));
+  }
+  .bg-blush {
+    background-color: oklch(var(--blush));
+  }
+  .bg-blush-deep {
+    background-color: oklch(var(--blush-deep));
+  }
+  .border-blush {
+    border-color: oklch(var(--blush-deep));
+  }
+  .hover-lift {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px oklch(0.38 0.08 20 / 0.12);
+  }
+}
+
+/* Marquee animation */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: oklch(var(--background));
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(var(--blush-deep));
+  border-radius: 3px;
+}
