@@ -3,6 +3,7 @@ import PromoBanner from '../components/PromoBanner';
 import FeaturedProducts from '../components/FeaturedProducts';
 import { Link } from '@tanstack/react-router';
 import { Sparkles, Leaf, Award } from 'lucide-react';
+import { useGetSiteSettings } from '../hooks/useQueries';
 
 const features = [
   {
@@ -23,9 +24,11 @@ const features = [
 ];
 
 export default function HomePage() {
+  const { data: siteSettings } = useGetSiteSettings();
+
   return (
     <div className="animate-fade-in">
-      <HeroBanner />
+      <HeroBanner heroImageUrl={siteSettings?.heroBannerImageUrl} />
       <PromoBanner />
       <FeaturedProducts />
 

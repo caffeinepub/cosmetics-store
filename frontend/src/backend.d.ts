@@ -7,8 +7,37 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
+export interface SiteSettings {
+    shopifyStoreDomain: string;
+    currency: string;
+    address: string;
+    storeName: string;
+    contactEmail: string;
+    shopifyStorefrontAccessToken: string;
+    heroBannerImageUrl: string;
+    shopifyEnabled: boolean;
+}
+export interface Product {
+    id: bigint;
+    featured: boolean;
+    name: string;
+    description: string;
+    stock: bigint;
+    imageUrl: string;
+    category: string;
+    price: bigint;
+}
+export enum UserRole {
+    admin = "admin",
+    user = "user",
+    guest = "guest"
+}
 export interface backendInterface {
-    addProduct(name: string, category: string, description: string, price: bigint, imageUrl: string, stock: bigint, featured: boolean): Promise<bigint>;
-    deleteProduct(id: bigint): Promise<void>;
-    updateProduct(id: bigint, name: string, category: string, description: string, price: bigint, imageUrl: string, stock: bigint, featured: boolean): Promise<void>;
+    assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    getCallerUserRole(): Promise<UserRole>;
+    getProducts(): Promise<Array<Product>>;
+    getSiteSettings(): Promise<SiteSettings>;
+    importShopifyProduct(title: string, category: string, description: string, price: bigint, imageUrl: string, stock: bigint, featured: boolean): Promise<string>;
+    isCallerAdmin(): Promise<boolean>;
+    updateSiteSettings(settings: SiteSettings): Promise<void>;
 }

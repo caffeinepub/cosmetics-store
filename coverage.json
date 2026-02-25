@@ -1,71 +1,87 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-25T02:55:16.571Z",
+  "generatedAt": "2026-02-25T03:36:06.418Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 2,
-    "implemented": 1,
+    "total": 4,
+    "implemented": 3,
     "items": [
       {
-        "id": "REQ-11",
-        "summary": "Add a protected Admin page (route: /admin) accessible from the navigation (or a direct URL). The page must include a product management interface with: a table/list of all existing products showing name, category, price, stock, and featured status; an 'Add Product' form/modal with fields for name, category, description, price, imageUrl, stock quantity, and featured flag; an 'Edit' action per product that pre-fills the form with existing values; and a 'Delete' action per product with a confirmation prompt.",
+        "id": "REQ-19",
+        "summary": "Extend the backend SiteSettings record to include Shopify integration fields: shopifyStoreDomain (Text), shopifyStorefrontAccessToken (Text), and shopifyEnabled (Bool). Update getSiteSettings and updateSiteSettings actor methods to include these fields with sensible defaults (empty strings / false).",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-20",
+        "summary": "Update the SiteSettings TypeScript type and the updateSiteSettings mutation payload in useQueries.ts to include the new Shopify fields: shopifyStoreDomain (string), shopifyStorefrontAccessToken (string), and shopifyEnabled (boolean).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/components/Navigation.tsx",
-          "frontend/src/pages/AdminPage.tsx",
-          "frontend/src/components/ProductTable.tsx",
-          "frontend/src/components/ProductFormDialog.tsx",
-          "frontend/src/components/DeleteProductDialog.tsx",
+          "frontend/src/types.ts",
           "frontend/src/hooks/useQueries.ts"
         ],
         "matchedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/components/Navigation.tsx",
-          "frontend/src/pages/AdminPage.tsx",
-          "frontend/src/components/ProductTable.tsx",
-          "frontend/src/components/ProductFormDialog.tsx",
-          "frontend/src/components/DeleteProductDialog.tsx",
+          "frontend/src/types.ts",
           "frontend/src/hooks/useQueries.ts"
         ]
       },
       {
-        "id": "REQ-12",
-        "summary": "Ensure the backend exposes addProduct, updateProduct, and deleteProduct methods that the Admin Panel frontend can call. The addProduct method accepts all product fields (name, category, description, price, imageUrl, stock, featured) and returns the new product ID. The updateProduct method accepts a product ID and updated fields. The deleteProduct method accepts a product ID and removes the product.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
+        "id": "REQ-21",
+        "summary": "Add a 'Shopify Integration' subsection to the SiteSettingsSection component in the Admin page. The subsection must include: a toggle/checkbox to enable or disable the Shopify integration (shopifyEnabled), an input field for the Shopify Store Domain (e.g. mystore.myshopify.com), and an input field for the Shopify Storefront Access Token. All fields must be loaded from getSiteSettings on mount and saved via the existing updateSiteSettings mutation. Display success/error toast notifications on save.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/SiteSettingsSection.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/SiteSettingsSection.tsx"
+        ]
+      },
+      {
+        "id": "REQ-22",
+        "summary": "Add a dedicated Shopify Products Import panel within the Admin page (as a new tab or sub-section alongside Products and Site Settings). When Shopify integration is enabled and credentials are configured, display a UI that allows the admin to view a list of products fetched from the configured Shopify Storefront API (using the stored domain and access token via the Shopify Storefront GraphQL API from the frontend). Each product entry should show the product title, image thumbnail, price, and an 'Import' button. Clicking 'Import' calls the backend addProduct method to save the product to the ICP store.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/utils/shopifyApi.ts",
+          "frontend/src/components/ShopifyImportPanel.tsx",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/AdminPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/utils/shopifyApi.ts",
+          "frontend/src/components/ShopifyImportPanel.tsx",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/AdminPage.tsx"
+        ]
       }
     ]
   },
   "changedFiles": [
+    "backend/authorization/MixinAuthorization.mo",
+    "backend/authorization/access-control.mo",
     "backend/main.mo",
     "backend/migration.mo",
     "build-request.json",
-    "build-template/README.md",
+    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
-    "frontend/src/components/CartItem.tsx",
-    "frontend/src/components/DeleteProductDialog.tsx",
-    "frontend/src/components/Navigation.tsx",
-    "frontend/src/components/ProductCard.tsx",
-    "frontend/src/components/ProductFormDialog.tsx",
-    "frontend/src/components/ProductTable.tsx",
+    "frontend/src/components/ShopifyImportPanel.tsx",
+    "frontend/src/components/SiteSettingsSection.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useActor.ts",
     "frontend/src/hooks/useQueries.ts",
     "frontend/src/pages/AdminPage.tsx",
-    "frontend/src/pages/CartPage.tsx",
-    "frontend/src/pages/CheckoutPage.tsx",
     "frontend/src/types.ts",
+    "frontend/src/utils/shopifyApi.ts",
+    "frontend/src/utils/urlParams.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

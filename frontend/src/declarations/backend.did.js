@@ -8,53 +8,89 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const UserRole = IDL.Variant({
+  'admin' : IDL.Null,
+  'user' : IDL.Null,
+  'guest' : IDL.Null,
+});
+export const Product = IDL.Record({
+  'id' : IDL.Nat,
+  'featured' : IDL.Bool,
+  'name' : IDL.Text,
+  'description' : IDL.Text,
+  'stock' : IDL.Nat,
+  'imageUrl' : IDL.Text,
+  'category' : IDL.Text,
+  'price' : IDL.Nat,
+});
+export const SiteSettings = IDL.Record({
+  'shopifyStoreDomain' : IDL.Text,
+  'currency' : IDL.Text,
+  'address' : IDL.Text,
+  'storeName' : IDL.Text,
+  'contactEmail' : IDL.Text,
+  'shopifyStorefrontAccessToken' : IDL.Text,
+  'heroBannerImageUrl' : IDL.Text,
+  'shopifyEnabled' : IDL.Bool,
+});
+
 export const idlService = IDL.Service({
-  'addProduct' : IDL.Func(
+  '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+  'getSiteSettings' : IDL.Func([], [SiteSettings], ['query']),
+  'importShopifyProduct' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Text, IDL.Nat, IDL.Text, IDL.Nat, IDL.Bool],
-      [IDL.Nat],
+      [IDL.Text],
       [],
     ),
-  'deleteProduct' : IDL.Func([IDL.Nat], [], []),
-  'updateProduct' : IDL.Func(
-      [
-        IDL.Nat,
-        IDL.Text,
-        IDL.Text,
-        IDL.Text,
-        IDL.Nat,
-        IDL.Text,
-        IDL.Nat,
-        IDL.Bool,
-      ],
-      [],
-      [],
-    ),
+  'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'updateSiteSettings' : IDL.Func([SiteSettings], [], []),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const UserRole = IDL.Variant({
+    'admin' : IDL.Null,
+    'user' : IDL.Null,
+    'guest' : IDL.Null,
+  });
+  const Product = IDL.Record({
+    'id' : IDL.Nat,
+    'featured' : IDL.Bool,
+    'name' : IDL.Text,
+    'description' : IDL.Text,
+    'stock' : IDL.Nat,
+    'imageUrl' : IDL.Text,
+    'category' : IDL.Text,
+    'price' : IDL.Nat,
+  });
+  const SiteSettings = IDL.Record({
+    'shopifyStoreDomain' : IDL.Text,
+    'currency' : IDL.Text,
+    'address' : IDL.Text,
+    'storeName' : IDL.Text,
+    'contactEmail' : IDL.Text,
+    'shopifyStorefrontAccessToken' : IDL.Text,
+    'heroBannerImageUrl' : IDL.Text,
+    'shopifyEnabled' : IDL.Bool,
+  });
+  
   return IDL.Service({
-    'addProduct' : IDL.Func(
+    '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+    'getSiteSettings' : IDL.Func([], [SiteSettings], ['query']),
+    'importShopifyProduct' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, IDL.Nat, IDL.Text, IDL.Nat, IDL.Bool],
-        [IDL.Nat],
+        [IDL.Text],
         [],
       ),
-    'deleteProduct' : IDL.Func([IDL.Nat], [], []),
-    'updateProduct' : IDL.Func(
-        [
-          IDL.Nat,
-          IDL.Text,
-          IDL.Text,
-          IDL.Text,
-          IDL.Nat,
-          IDL.Text,
-          IDL.Nat,
-          IDL.Bool,
-        ],
-        [],
-        [],
-      ),
+    'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'updateSiteSettings' : IDL.Func([SiteSettings], [], []),
   });
 };
 

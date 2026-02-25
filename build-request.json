@@ -1,68 +1,100 @@
 {
   "kind": "build_request",
-  "title": "Build Admin Panel for Product Management",
+  "title": "Add Shopify Integration Interface",
   "projectName": "Glow Shop",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-11",
-      "text": "Add a protected Admin page (route: /admin) accessible from the navigation (or a direct URL). The page must include a product management interface with: a table/list of all existing products showing name, category, price, stock, and featured status; an 'Add Product' form/modal with fields for name, category, description, price, imageUrl, stock quantity, and featured flag; an 'Edit' action per product that pre-fills the form with existing values; and a 'Delete' action per product with a confirmation prompt.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-6",
-          "msg-8"
-        ],
-        "quotes": [
-          "Add new products (name, category, description, price, stock, image URL, featured flag)",
-          "Edit existing products",
-          "Delete products"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Navigating to /admin renders the Admin Panel page",
-        "All existing products are listed in a table with name, category, price, stock, and featured columns",
-        "Clicking 'Add Product' opens a form/modal with all required fields (name, category, description, price, imageUrl, stock, featured)",
-        "Submitting the Add Product form calls the backend addProduct method and the product list refreshes",
-        "Clicking 'Edit' on a product pre-fills the form with that product's current values",
-        "Submitting the Edit form calls the backend updateProduct method and the list reflects the changes",
-        "Clicking 'Delete' on a product shows a confirmation prompt; confirming calls the backend deleteProduct method and removes the product from the list",
-        "Form validation prevents submission with missing required fields",
-        "Success and error states are communicated via toast notifications"
-      ]
-    },
-    {
-      "id": "REQ-12",
-      "text": "Ensure the backend exposes addProduct, updateProduct, and deleteProduct methods that the Admin Panel frontend can call. The addProduct method accepts all product fields (name, category, description, price, imageUrl, stock, featured) and returns the new product ID. The updateProduct method accepts a product ID and updated fields. The deleteProduct method accepts a product ID and removes the product.",
+      "id": "REQ-19",
+      "text": "Extend the backend SiteSettings record to include Shopify integration fields: shopifyStoreDomain (Text), shopifyStorefrontAccessToken (Text), and shopifyEnabled (Bool). Update getSiteSettings and updateSiteSettings actor methods to include these fields with sensible defaults (empty strings / false).",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-6",
-          "msg-8"
+          "msg-5"
         ],
         "quotes": [
-          "Add new products (name, category, description, price, stock, image URL, featured flag)",
-          "Edit existing products",
-          "Delete products"
+          "add Shopify interface"
         ]
       },
       "acceptanceCriteria": [
-        "addProduct accepts all product fields and returns the new product's ID",
-        "updateProduct accepts a product ID and partial or full product fields and updates the stored record",
-        "deleteProduct accepts a product ID and removes the product from the store",
-        "All three methods are callable from the frontend actor interface",
-        "getProducts reflects additions, edits, and deletions immediately after each operation"
+        "SiteSettings record includes shopifyStoreDomain, shopifyStorefrontAccessToken, and shopifyEnabled fields",
+        "getSiteSettings returns default values for these fields on first call",
+        "updateSiteSettings accepts and persists the new Shopify fields",
+        "Existing site settings fields (heroBannerImageUrl, storeName, contactEmail, address, currency) continue to work unchanged"
+      ]
+    },
+    {
+      "id": "REQ-20",
+      "text": "Update the SiteSettings TypeScript type and the updateSiteSettings mutation payload in useQueries.ts to include the new Shopify fields: shopifyStoreDomain (string), shopifyStorefrontAccessToken (string), and shopifyEnabled (boolean).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-5"
+        ],
+        "quotes": [
+          "add Shopify interface"
+        ]
+      },
+      "acceptanceCriteria": [
+        "SiteSettings TypeScript type includes shopifyStoreDomain, shopifyStorefrontAccessToken, and shopifyEnabled",
+        "updateSiteSettings mutation payload includes these new fields",
+        "No TypeScript type errors related to the new fields"
+      ]
+    },
+    {
+      "id": "REQ-21",
+      "text": "Add a 'Shopify Integration' subsection to the SiteSettingsSection component in the Admin page. The subsection must include: a toggle/checkbox to enable or disable the Shopify integration (shopifyEnabled), an input field for the Shopify Store Domain (e.g. mystore.myshopify.com), and an input field for the Shopify Storefront Access Token. All fields must be loaded from getSiteSettings on mount and saved via the existing updateSiteSettings mutation. Display success/error toast notifications on save.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-5"
+        ],
+        "quotes": [
+          "add Shopify interface"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A 'Shopify Integration' subsection appears in the Site Settings tab of the Admin page",
+        "An enable/disable toggle for the Shopify integration is rendered",
+        "Input fields for Shopify Store Domain and Storefront Access Token are rendered",
+        "Fields are pre-populated with current values loaded from getSiteSettings on mount",
+        "Clicking Save persists values via updateSiteSettings and shows a success toast",
+        "If save fails, an error toast is displayed"
+      ]
+    },
+    {
+      "id": "REQ-22",
+      "text": "Add a dedicated Shopify Products Import panel within the Admin page (as a new tab or sub-section alongside Products and Site Settings). When Shopify integration is enabled and credentials are configured, display a UI that allows the admin to view a list of products fetched from the configured Shopify Storefront API (using the stored domain and access token via the Shopify Storefront GraphQL API from the frontend). Each product entry should show the product title, image thumbnail, price, and an 'Import' button. Clicking 'Import' calls the backend addProduct method to save the product to the ICP store.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-5"
+        ],
+        "quotes": [
+          "add Shopify interface"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A 'Shopify Import' tab or panel appears in the Admin page when shopifyEnabled is true",
+        "When Shopify credentials are missing or integration is disabled, a prompt to configure settings is shown instead",
+        "Products are fetched from the Shopify Storefront GraphQL API using the stored domain and access token",
+        "Each product card shows title, thumbnail image, and price",
+        "Clicking 'Import' on a product card calls addProduct on the backend with the product data and shows a success or error toast",
+        "A loading state is shown while products are being fetched from Shopify"
       ]
     }
   ],
   "constraints": [
-    "Do not modify files under frontend/src/hooks/ or frontend/src/components/ui/",
-    "All backend logic must remain in the single actor in backend/main.mo"
+    "Do not break existing SiteSettings fields (heroBannerImageUrl, storeName, contactEmail, address, currency)",
+    "Shopify Storefront API calls must be made from the frontend only — do not proxy through the ICP backend actor",
+    "Immutable frontend paths (hooks/useInternetIdentity.ts, hooks/useActor.ts, main.tsx, components/ui) must not be modified"
   ],
   "nonGoals": [
-    "Authentication/authorization gating for the admin page (no login required for now)",
-    "Order management in the admin panel",
-    "Image upload functionality — image URLs are entered as text"
+    "Full Shopify order sync or two-way inventory sync",
+    "Shopify Admin API integration (only Storefront API)",
+    "Automatic/scheduled product sync",
+    "Shopify OAuth authentication flow",
+    "Replacing the existing ICP product catalog with Shopify as the primary data store"
   ],
   "imageRequirements": {
     "required": [],

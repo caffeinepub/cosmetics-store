@@ -89,55 +89,186 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface backendInterface {
-    addProduct(name: string, category: string, description: string, price: bigint, imageUrl: string, stock: bigint, featured: boolean): Promise<bigint>;
-    deleteProduct(id: bigint): Promise<void>;
-    updateProduct(id: bigint, name: string, category: string, description: string, price: bigint, imageUrl: string, stock: bigint, featured: boolean): Promise<void>;
+export interface SiteSettings {
+    shopifyStoreDomain: string;
+    currency: string;
+    address: string;
+    storeName: string;
+    contactEmail: string;
+    shopifyStorefrontAccessToken: string;
+    heroBannerImageUrl: string;
+    shopifyEnabled: boolean;
 }
+export interface Product {
+    id: bigint;
+    featured: boolean;
+    name: string;
+    description: string;
+    stock: bigint;
+    imageUrl: string;
+    category: string;
+    price: bigint;
+}
+export enum UserRole {
+    admin = "admin",
+    user = "user",
+    guest = "guest"
+}
+export interface backendInterface {
+    _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
+    assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    getCallerUserRole(): Promise<UserRole>;
+    getProducts(): Promise<Array<Product>>;
+    getSiteSettings(): Promise<SiteSettings>;
+    importShopifyProduct(title: string, category: string, description: string, price: bigint, imageUrl: string, stock: bigint, featured: boolean): Promise<string>;
+    isCallerAdmin(): Promise<boolean>;
+    updateSiteSettings(settings: SiteSettings): Promise<void>;
+}
+import type { UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
-    async addProduct(arg0: string, arg1: string, arg2: string, arg3: bigint, arg4: string, arg5: bigint, arg6: boolean): Promise<bigint> {
+    async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.addProduct(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+                const result = await this.actor._initializeAccessControlWithSecret(arg0);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.addProduct(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+            const result = await this.actor._initializeAccessControlWithSecret(arg0);
             return result;
         }
     }
-    async deleteProduct(arg0: bigint): Promise<void> {
+    async assignCallerUserRole(arg0: Principal, arg1: UserRole): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.deleteProduct(arg0);
+                const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n1(this._uploadFile, this._downloadFile, arg1));
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.deleteProduct(arg0);
+            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n1(this._uploadFile, this._downloadFile, arg1));
             return result;
         }
     }
-    async updateProduct(arg0: bigint, arg1: string, arg2: string, arg3: string, arg4: bigint, arg5: string, arg6: bigint, arg7: boolean): Promise<void> {
+    async getCallerUserRole(): Promise<UserRole> {
         if (this.processError) {
             try {
-                const result = await this.actor.updateProduct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+                const result = await this.actor.getCallerUserRole();
+                return from_candid_UserRole_n3(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getCallerUserRole();
+            return from_candid_UserRole_n3(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getProducts(): Promise<Array<Product>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getProducts();
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.updateProduct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+            const result = await this.actor.getProducts();
             return result;
         }
     }
+    async getSiteSettings(): Promise<SiteSettings> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getSiteSettings();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getSiteSettings();
+            return result;
+        }
+    }
+    async importShopifyProduct(arg0: string, arg1: string, arg2: string, arg3: bigint, arg4: string, arg5: bigint, arg6: boolean): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.importShopifyProduct(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.importShopifyProduct(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+            return result;
+        }
+    }
+    async isCallerAdmin(): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.isCallerAdmin();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.isCallerAdmin();
+            return result;
+        }
+    }
+    async updateSiteSettings(arg0: SiteSettings): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateSiteSettings(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateSiteSettings(arg0);
+            return result;
+        }
+    }
+}
+function from_candid_UserRole_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
+    return from_candid_variant_n4(_uploadFile, _downloadFile, value);
+}
+function from_candid_variant_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    admin: null;
+} | {
+    user: null;
+} | {
+    guest: null;
+}): UserRole {
+    return "admin" in value ? UserRole.admin : "user" in value ? UserRole.user : "guest" in value ? UserRole.guest : value;
+}
+function to_candid_UserRole_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): _UserRole {
+    return to_candid_variant_n2(_uploadFile, _downloadFile, value);
+}
+function to_candid_variant_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): {
+    admin: null;
+} | {
+    user: null;
+} | {
+    guest: null;
+} {
+    return value == UserRole.admin ? {
+        admin: null
+    } : value == UserRole.user ? {
+        user: null
+    } : value == UserRole.guest ? {
+        guest: null
+    } : value;
 }
 export interface CreateActorOptions {
     agent?: Agent;

@@ -1,49 +1,70 @@
 import Map "mo:core/Map";
 import Nat "mo:core/Nat";
-import Text "mo:core/Text";
 
 module {
-  type Product = {
-    id : Nat;
-    name : Text;
-    category : Text;
-    description : Text;
-    price : Nat;
-    imageUrl : Text;
-    stock : Nat;
-    featured : Bool;
+  // Old SiteSettings structure (without Shopify integration).
+  type OldSiteSettings = {
+    heroBannerImageUrl : Text;
+    storeName : Text;
+    contactEmail : Text;
+    address : Text;
+    currency : Text;
   };
 
+  // Old Actor structure (without Shopify integration).
   type OldActor = {
-    products : Map.Map<Nat, Product>;
+    products : Map.Map<Nat, {
+      id : Nat;
+      name : Text;
+      category : Text;
+      description : Text;
+      price : Nat;
+      imageUrl : Text;
+      stock : Nat;
+      featured : Bool;
+    }>;
     nextProductId : Nat;
-    carts : Map.Map<Text, [CartItem]>;
-    orders : Map.Map<Nat, Order>;
-    nextOrderId : Nat;
+    siteSettings : OldSiteSettings;
   };
 
-  type CartItem = {
-    productId : Nat;
-    quantity : Nat;
+  // New SiteSettings structure with Shopify integration.
+  type NewSiteSettings = {
+    heroBannerImageUrl : Text;
+    storeName : Text;
+    contactEmail : Text;
+    address : Text;
+    currency : Text;
+    shopifyStoreDomain : Text;
+    shopifyStorefrontAccessToken : Text;
+    shopifyEnabled : Bool;
   };
 
-  type Order = {
-    id : Nat;
-    items : [CartItem];
-    totalPrice : Nat;
-    status : Text;
-    timestamp : Int;
-  };
-
+  // New Actor structure with Shopify integration.
   type NewActor = {
-    products : Map.Map<Nat, Product>;
+    products : Map.Map<Nat, {
+      id : Nat;
+      name : Text;
+      category : Text;
+      description : Text;
+      price : Nat;
+      imageUrl : Text;
+      stock : Nat;
+      featured : Bool;
+    }>;
     nextProductId : Nat;
+    siteSettingsPersistent : NewSiteSettings;
   };
 
   public func run(old : OldActor) : NewActor {
-    {
-      products = old.products;
-      nextProductId = old.nextProductId;
+    // Migrate old SiteSettings by adding Shopify fields with default values.
+    let newSiteSettings = {
+      old.siteSettings with
+      shopifyStoreDomain = "";
+      shopifyStorefrontAccessToken = "";
+      shopifyEnabled = false;
     };
+
+    // Update the actor state to use new SiteSettings structure.
+    { old with siteSettingsPersistent = newSiteSettings };
   };
 };

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 5,
+  "projectStateVersion": 11,
   "summary": "E-commerce website for selling cosmetics products.",
   "architectural_notes": [],
   "known_issues": [],
@@ -69,6 +69,62 @@
         "REQ-11"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-a-site-settings-section-to-the-admin-page-ui-it-should-appear-as-a-separate-tab-or-panel-alongside-the-product-management-table-the-section-must-include-an-input-field-for-the-hero-banner-image-url-a-save-button-that-calls-the-updatesitesettings-backend-method-and-a-success-error-toast-notification-on-save-the-current-value-must-be-loaded-from-getsitesettings-on-page-load",
+      "title": "Add a 'Site Settings' section to the Admin page UI. It should appear as a separate tab or panel alongside the product management table. The section must include an input field for the Hero Banner Image URL, a Save button that calls the updateSiteSettings backend method, and a success/error toast notification on save. The current value must be loaded from getSiteSettings on page load.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-herobanner-tsx-to-dynamically-use-the-hero-banner-image-url-from-site-settings-if-available-on-app-load-fetch-getsitesettings-and-pass-the-heroimageurl-to-the-herobanner-component-if-the-value-is-empty-or-absent-fall-back-to-the-existing-static-asset-path-returned-by-the-imagehelpers-utility",
+      "title": "Update HeroBanner.tsx to dynamically use the hero banner image URL from site settings if available. On app load, fetch getSiteSettings and pass the heroImageUrl to the HeroBanner component. If the value is empty or absent, fall back to the existing static asset path returned by the imageHelpers utility.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-sitesettingssection-component-in-the-admin-page-to-include-a-merchant-settings-subsection-with-input-fields-for-store-name-contact-email-address-and-currency-these-fields-must-be-loaded-from-getsitesettings-on-mount-and-saved-via-the-existing-updatesitesettings-mutation-display-success-error-toast-notifications-on-save",
+      "title": "Update the SiteSettingsSection component in the Admin page to include a 'Merchant Settings' subsection with input fields for: Store Name, Contact Email, Address, and Currency. These fields must be loaded from getSiteSettings on mount, and saved via the existing updateSiteSettings mutation. Display success/error toast notifications on save.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-usequeries-ts-hooks-so-that-the-sitesettings-typescript-type-and-the-updatesitesettings-mutation-payload-include-the-new-merchant-fields-storename-contactemail-address-currency-alongside-the-existing-herobannerimageurl-field",
+      "title": "Update the useQueries.ts hooks so that the SiteSettings TypeScript type and the updateSiteSettings mutation payload include the new merchant fields (storeName, contactEmail, address, currency) alongside the existing heroBannerImageUrl field.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-sitesettings-typescript-type-and-the-updatesitesettings-mutation-payload-in-usequeries-ts-to-include-the-new-shopify-fields-shopifystoredomain-string-shopifystorefrontaccesstoken-string-and-shopifyenabled-boolean",
+      "title": "Update the SiteSettings TypeScript type and the updateSiteSettings mutation payload in useQueries.ts to include the new Shopify fields: shopifyStoreDomain (string), shopifyStorefrontAccessToken (string), and shopifyEnabled (boolean).",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-shopify-integration-subsection-to-the-sitesettingssection-component-in-the-admin-page-the-subsection-must-include-a-toggle-checkbox-to-enable-or-disable-the-shopify-integration-shopifyenabled-an-input-field-for-the-shopify-store-domain-e-g-mystore-myshopify-com-and-an-input-field-for-the-shopify-storefront-access-token-all-fields-must-be-loaded-from-getsitesettings-on-mount-and-saved-via-the-existing-updatesitesettings-mutation-display-success-error-toast-notifications-on-save",
+      "title": "Add a 'Shopify Integration' subsection to the SiteSettingsSection component in the Admin page. The subsection must include: a toggle/checkbox to enable or disable the Shopify integration (shopifyEnabled), an input field for the Shopify Store Domain (e.g. mystore.myshopify.com), and an input field for the Shopify Storefront Access Token. All fields must be loaded from getSiteSettings on mount and saved via the existing updateSiteSettings mutation. Display success/error toast notifications on save.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-dedicated-shopify-products-import-panel-within-the-admin-page-as-a-new-tab-or-sub-section-alongside-products-and-site-settings-when-shopify-integration-is-enabled-and-credentials-are-configured-display-a-ui-that-allows-the-admin-to-view-a-list-of-products-fetched-from-the-configured-shopify-storefront-api-using-the-stored-domain-and-access-token-via-the-shopify-storefront-graphql-api-from-the-frontend-each-product-entry-should-show-the-product-title-image-thumbnail-price-and-an-import-button-clicking-import-calls-the-backend-addproduct-method-to-save-the-product-to-the-icp-store",
+      "title": "Add a dedicated Shopify Products Import panel within the Admin page (as a new tab or sub-section alongside Products and Site Settings). When Shopify integration is enabled and credentials are configured, display a UI that allows the admin to view a list of products fetched from the configured Shopify Storefront API (using the stored domain and access token via the Shopify Storefront GraphQL API from the frontend). Each product entry should show the product title, image thumbnail, price, and an 'Import' button. Clicking 'Import' calls the backend addProduct method to save the product to the ICP store.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -131,6 +187,48 @@
       "summary": "Ensure the backend exposes addProduct, updateProduct, and deleteProduct methods that the Admin Panel frontend can call. The addProduct method accepts all product fields (name, category, description, price, imageUrl, stock, featured) and returns the new product ID. The updateProduct method accepts a product ID and updated fields. The deleteProduct method accepts a product ID and removes the product.",
       "reqIds": [
         "REQ-12"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Add a 'Site Settings' section to the Admin Panel where the admin can update the hero banner image and other visual/site-level settings.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Add a 'Site Settings' tab or section to the Admin page (/admin) that allows the admin to update site-level visual settings. At minimum, include a field to update the hero banner image URL (which overrides the default static asset used in HeroBanner.tsx). Store these settings in the Motoko backend as a stable record. Expose getSiteSettings and updateSiteSettings actor methods.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Add merchant settings to the Site Settings section in the Admin Panel (e.g., store name, contact email, address, currency, etc.).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Extend the backend SiteSettings record to include merchant-related fields: storeName (Text), contactEmail (Text), address (Text), currency (Text). Update the getSiteSettings and updateSiteSettings actor methods to include these new fields, providing sensible defaults (empty strings) so existing state is not broken.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Add a Shopify interface/integration to the cosmetics store.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Extend the backend SiteSettings record to include Shopify integration fields: shopifyStoreDomain (Text), shopifyStorefrontAccessToken (Text), and shopifyEnabled (Bool). Update getSiteSettings and updateSiteSettings actor methods to include these fields with sensible defaults (empty strings / false).",
+      "reqIds": [
+        "REQ-19"
       ],
       "status": "pending"
     }

@@ -1,14 +1,19 @@
 import { useState } from 'react';
-import { Plus, RefreshCw, Settings2 } from 'lucide-react';
+import { Plus, RefreshCw, Settings2, Package, Sliders, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ProductTable from '../components/ProductTable';
 import ProductFormDialog from '../components/ProductFormDialog';
-import { useGetProducts } from '../hooks/useQueries';
+import SiteSettingsSection from '../components/SiteSettingsSection';
+import ShopifyImportPanel from '../components/ShopifyImportPanel';
+import { useGetProducts, useGetSiteSettings } from '../hooks/useQueries';
 
 export default function AdminPage() {
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('products');
   const { data: products, isLoading, isError, refetch, isFetching } = useGetProducts();
+  const { data: siteSettings } = useGetSiteSettings();
 
   return (
     <main className="min-h-screen bg-ivory">
@@ -25,36 +30,38 @@ export default function AdminPage() {
                   Admin Panel
                 </h1>
                 <p className="font-sans text-sm text-foreground/60 mt-0.5">
-                  Manage your product catalog
+                  Manage your store and settings
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => refetch()}
-                disabled={isFetching}
-                className="border-blush-deep/40 text-foreground/70 hover:bg-blush/50 font-sans"
-              >
-                <RefreshCw className={`w-4 h-4 mr-1.5 ${isFetching ? 'animate-spin' : ''}`} />
-                Refresh
-              </Button>
-              <Button
-                onClick={() => setAddDialogOpen(true)}
-                className="bg-rose-dark hover:bg-rose-dark/90 text-ivory font-sans shadow-sm"
-              >
-                <Plus className="w-4 h-4 mr-1.5" />
-                Add Product
-              </Button>
-            </div>
+            {activeTab === 'products' && (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => refetch()}
+                  disabled={isFetching}
+                  className="border-blush-deep/40 text-foreground/70 hover:bg-blush/50 font-sans"
+                >
+                  <RefreshCw className={`w-4 h-4 mr-1.5 ${isFetching ? 'animate-spin' : ''}`} />
+                  Refresh
+                </Button>
+                <Button
+                  onClick={() => setAddDialogOpen(true)}
+                  className="bg-rose-dark hover:bg-rose-dark/90 text-ivory font-sans shadow-sm"
+                >
+                  <Plus className="w-4 h-4 mr-1.5" />
+                  Add Product
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Stats Bar */}
-      {!isLoading && !isError && products && (
+      {/* Stats Bar — only shown on Products tab */}
+      {activeTab === 'products' && !isLoading && !isError && products && (
         <section className="border-b border-blush-deep/10 bg-white/40">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex flex-wrap gap-6">
@@ -87,34 +94,76 @@ export default function AdminPage() {
         </section>
       )}
 
-      {/* Content */}
+      {/* Tabs */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {isLoading ? (
-          <div className="space-y-3">
-            {[...Array(5)].map((_, i) => (
-              <Skeleton key={i} className="h-16 w-full rounded-xl bg-blush/30" />
-            ))}
-          </div>
-        ) : isError ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
-              <Settings2 className="w-8 h-8 text-destructive/50" />
-            </div>
-            <p className="font-serif text-xl text-foreground/60 mb-2">Failed to load products</p>
-            <p className="font-sans text-sm text-foreground/40 mb-6">
-              There was an error fetching the product list.
-            </p>
-            <Button
-              variant="outline"
-              onClick={() => refetch()}
-              className="border-blush-deep/40 hover:bg-blush/50"
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-6 bg-blush/40 border border-blush-deep/20 p-1 rounded-xl h-auto flex-wrap gap-1">
+            <TabsTrigger
+              value="products"
+              className="font-sans text-sm data-[state=active]:bg-white data-[state=active]:text-rose-dark data-[state=active]:shadow-sm rounded-lg px-5 py-2 flex items-center gap-2"
             >
-              Try Again
-            </Button>
-          </div>
-        ) : (
-          <ProductTable products={products ?? []} />
-        )}
+              <Package className="w-4 h-4" />
+              Products
+            </TabsTrigger>
+            <TabsTrigger
+              value="settings"
+              className="font-sans text-sm data-[state=active]:bg-white data-[state=active]:text-rose-dark data-[state=active]:shadow-sm rounded-lg px-5 py-2 flex items-center gap-2"
+            >
+              <Sliders className="w-4 h-4" />
+              Site Settings
+            </TabsTrigger>
+            <TabsTrigger
+              value="shopify"
+              className="font-sans text-sm data-[state=active]:bg-white data-[state=active]:text-rose-dark data-[state=active]:shadow-sm rounded-lg px-5 py-2 flex items-center gap-2"
+            >
+              <ShoppingBag className="w-4 h-4" />
+              Shopify Import
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Products Tab */}
+          <TabsContent value="products">
+            {isLoading ? (
+              <div className="space-y-3">
+                {[...Array(5)].map((_, i) => (
+                  <Skeleton key={i} className="h-16 w-full rounded-xl bg-blush/30" />
+                ))}
+              </div>
+            ) : isError ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
+                  <Settings2 className="w-8 h-8 text-destructive/50" />
+                </div>
+                <p className="font-serif text-xl text-foreground/60 mb-2">Failed to load products</p>
+                <p className="font-sans text-sm text-foreground/40 mb-6">
+                  There was an error fetching the product list.
+                </p>
+                <Button
+                  variant="outline"
+                  onClick={() => refetch()}
+                  className="border-blush-deep/40 hover:bg-blush/50"
+                >
+                  Try Again
+                </Button>
+              </div>
+            ) : (
+              <ProductTable products={products ?? []} />
+            )}
+          </TabsContent>
+
+          {/* Site Settings Tab */}
+          <TabsContent value="settings">
+            <SiteSettingsSection />
+          </TabsContent>
+
+          {/* Shopify Import Tab */}
+          <TabsContent value="shopify">
+            <ShopifyImportPanel
+              siteSettings={siteSettings}
+              onGoToSettings={() => setActiveTab('settings')}
+            />
+          </TabsContent>
+        </Tabs>
       </section>
 
       {/* Add Product Dialog */}

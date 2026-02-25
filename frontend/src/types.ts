@@ -29,3 +29,14 @@ export interface Order {
   status: string;
   timestamp: bigint;
 }
+
+export interface SiteSettings {
+  heroBannerImageUrl: string;
+  storeName: string;
+  contactEmail: string;
+  address: string;
+  currency: string;
+  shopifyStoreDomain: string;
+  shopifyStorefrontAccessToken: string;
+  shopifyEnabled: boolean;
+}

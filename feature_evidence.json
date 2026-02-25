@@ -2,26 +2,63 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-a-protected-admin-page-route-admin-accessible-from-the-navigation-or-a-direct-url-the-page-must-include-a-product-management-interface-with-a-table-list-of-all-existing-products-showing-name-category-price-stock-and-featured-status-an-add-product-form-modal-with-fields-for-name-category-description-price-imageurl-stock-quantity-and-featured-flag-an-edit-action-per-product-that-pre-fills-the-form-with-existing-values-and-a-delete-action-per-product-with-a-confirmation-prompt",
-      "featureTitle": "Add a protected Admin page (route: /admin) accessible from the navigation (or a direct URL). The page must include a product management interface with: a table/list of all existing products showing name, category, price, stock, and featured status; an 'Add Product' form/modal with fields for name, category, description, price, imageUrl, stock quantity, and featured flag; an 'Edit' action per product that pre-fills the form with existing values; and a 'Delete' action per product with a confirmation prompt.",
+      "featureId": "feature-update-the-sitesettings-typescript-type-and-the-updatesitesettings-mutation-payload-in-usequeries-ts-to-include-the-new-shopify-fields-shopifystoredomain-string-shopifystorefrontaccesstoken-string-and-shopifyenabled-boolean",
+      "featureTitle": "Update the SiteSettings TypeScript type and the updateSiteSettings mutation payload in useQueries.ts to include the new Shopify fields: shopifyStoreDomain (string), shopifyStorefrontAccessToken (string), and shopifyEnabled (boolean).",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/DeleteProductDialog.tsx",
-        "frontend/src/components/Navigation.tsx",
-        "frontend/src/components/ProductFormDialog.tsx",
-        "frontend/src/components/ProductTable.tsx",
         "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/AdminPage.tsx"
+        "frontend/src/types.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-11"
+        "REQ-20"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-shopify-integration-subsection-to-the-sitesettingssection-component-in-the-admin-page-the-subsection-must-include-a-toggle-checkbox-to-enable-or-disable-the-shopify-integration-shopifyenabled-an-input-field-for-the-shopify-store-domain-e-g-mystore-myshopify-com-and-an-input-field-for-the-shopify-storefront-access-token-all-fields-must-be-loaded-from-getsitesettings-on-mount-and-saved-via-the-existing-updatesitesettings-mutation-display-success-error-toast-notifications-on-save",
+      "featureTitle": "Add a 'Shopify Integration' subsection to the SiteSettingsSection component in the Admin page. The subsection must include: a toggle/checkbox to enable or disable the Shopify integration (shopifyEnabled), an input field for the Shopify Store Domain (e.g. mystore.myshopify.com), and an input field for the Shopify Storefront Access Token. All fields must be loaded from getSiteSettings on mount and saved via the existing updateSiteSettings mutation. Display success/error toast notifications on save.",
+      "files": [
+        "frontend/src/components/SiteSettingsSection.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-21"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-dedicated-shopify-products-import-panel-within-the-admin-page-as-a-new-tab-or-sub-section-alongside-products-and-site-settings-when-shopify-integration-is-enabled-and-credentials-are-configured-display-a-ui-that-allows-the-admin-to-view-a-list-of-products-fetched-from-the-configured-shopify-storefront-api-using-the-stored-domain-and-access-token-via-the-shopify-storefront-graphql-api-from-the-frontend-each-product-entry-should-show-the-product-title-image-thumbnail-price-and-an-import-button-clicking-import-calls-the-backend-addproduct-method-to-save-the-product-to-the-icp-store",
+      "featureTitle": "Add a dedicated Shopify Products Import panel within the Admin page (as a new tab or sub-section alongside Products and Site Settings). When Shopify integration is enabled and credentials are configured, display a UI that allows the admin to view a list of products fetched from the configured Shopify Storefront API (using the stored domain and access token via the Shopify Storefront GraphQL API from the frontend). Each product entry should show the product title, image thumbnail, price, and an 'Import' button. Clicking 'Import' calls the backend addProduct method to save the product to the ICP store.",
+      "files": [
+        "frontend/src/components/ShopifyImportPanel.tsx",
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/AdminPage.tsx",
+        "frontend/src/utils/shopifyApi.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-22"
       ],
       "confidence": "high"
     }

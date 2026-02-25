@@ -1,12 +1,23 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import { getSessionId } from '../utils/session';
-import type { Product, ShoppingCart } from '../types';
+import type { Product, ShoppingCart, SiteSettings } from '../types';
 
 // The generated backend interface only includes admin methods.
 // We cast the actor to access the full runtime API for read/cart/order operations.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type FullActor = any;
+
+const defaultSiteSettings: SiteSettings = {
+  heroBannerImageUrl: '',
+  storeName: '',
+  contactEmail: '',
+  address: '',
+  currency: '',
+  shopifyStoreDomain: '',
+  shopifyStorefrontAccessToken: '',
+  shopifyEnabled: false,
+};
 
 // ─── Products ────────────────────────────────────────────────────────────────
 
@@ -65,7 +76,7 @@ export function useAddProduct() {
   return useMutation({
     mutationFn: async (data: ProductFormData) => {
       if (!actor) throw new Error('Actor not ready');
-      return actor.addProduct(
+      return (actor as FullActor).addProduct(
         data.name,
         data.category,
         data.description,
@@ -89,7 +100,7 @@ export function useUpdateProduct() {
   return useMutation({
     mutationFn: async ({ id, data }: { id: bigint; data: ProductFormData }) => {
       if (!actor) throw new Error('Actor not ready');
-      return actor.updateProduct(
+      return (actor as FullActor).updateProduct(
         id,
         data.name,
         data.category,
@@ -115,7 +126,72 @@ export function useDeleteProduct() {
   return useMutation({
     mutationFn: async (id: bigint) => {
       if (!actor) throw new Error('Actor not ready');
-      return actor.deleteProduct(id);
+      return (actor as FullActor).deleteProduct(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['featured-products'] });
+    },
+  });
+}
+
+// ─── Site Settings ────────────────────────────────────────────────────────────
+
+export function useGetSiteSettings() {
+  const { actor, isFetching } = useActor();
+  return useQuery<SiteSettings>({
+    queryKey: ['site-settings'],
+    queryFn: async (): Promise<SiteSettings> => {
+      if (!actor) return defaultSiteSettings;
+      return actor.getSiteSettings();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useUpdateSiteSettings() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (newSettings: SiteSettings) => {
+      if (!actor) throw new Error('Actor not ready');
+      return actor.updateSiteSettings(newSettings);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['site-settings'] });
+    },
+  });
+}
+
+// ─── Shopify Import ───────────────────────────────────────────────────────────
+
+export interface ShopifyImportData {
+  title: string;
+  category: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+  stock: number;
+  featured: boolean;
+}
+
+export function useImportShopifyProduct() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: ShopifyImportData) => {
+      if (!actor) throw new Error('Actor not ready');
+      return actor.importShopifyProduct(
+        data.title,
+        data.category,
+        data.description,
+        BigInt(Math.round(data.price * 100)),
+        data.imageUrl,
+        BigInt(data.stock),
+        data.featured,
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });

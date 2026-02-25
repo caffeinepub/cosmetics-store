@@ -2,14 +2,28 @@ import { Link } from '@tanstack/react-router';
 import { ArrowRight } from 'lucide-react';
 import { getHeroImage } from '../utils/imageHelpers';
 
-export default function HeroBanner() {
+interface HeroBannerProps {
+  heroImageUrl?: string;
+}
+
+export default function HeroBanner({ heroImageUrl }: HeroBannerProps) {
+  const imageSrc =
+    heroImageUrl && heroImageUrl.trim() !== '' ? heroImageUrl : getHeroImage();
+
   return (
     <section className="relative w-full overflow-hidden" style={{ minHeight: '420px' }}>
       {/* Background image */}
       <img
-        src={getHeroImage()}
+        src={imageSrc}
         alt="Luxury cosmetics collection"
         className="absolute inset-0 w-full h-full object-cover object-center"
+        onError={(e) => {
+          // Fall back to static asset if custom URL fails to load
+          const target = e.currentTarget;
+          if (target.src !== getHeroImage()) {
+            target.src = getHeroImage();
+          }
+        }}
       />
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-rose-dark/80 via-rose-dark/50 to-transparent" />

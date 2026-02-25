@@ -1,57 +1,79 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Build Admin Panel for Product Management",
+  "title": "Add Shopify Integration Interface",
   "requirements": [
     {
-      "id": "REQ-11",
-      "summary": "Add a protected Admin page at /admin with product management interface including product list table, add/edit/delete functionality with forms and confirmation prompts",
+      "id": "REQ-20",
+      "summary": "Update TypeScript types to include Shopify integration fields in SiteSettings and mutation payloads",
       "acceptanceCriteria": [
-        "Navigating to /admin renders the Admin Panel page",
-        "All existing products are listed in a table with name, category, price, stock, and featured columns",
-        "Clicking 'Add Product' opens a form/modal with all required fields (name, category, description, price, imageUrl, stock, featured)",
-        "Submitting the Add Product form calls the backend addProduct method and the product list refreshes",
-        "Clicking 'Edit' on a product pre-fills the form with that product's current values",
-        "Submitting the Edit form calls the backend updateProduct method and the list reflects the changes",
-        "Clicking 'Delete' on a product shows a confirmation prompt; confirming calls the backend deleteProduct method and removes the product from the list",
-        "Form validation prevents submission with missing required fields",
-        "Success and error states are communicated via toast notifications"
+        "SiteSettings TypeScript type includes shopifyStoreDomain, shopifyStorefrontAccessToken, and shopifyEnabled",
+        "updateSiteSettings mutation payload includes these new fields",
+        "No TypeScript type errors related to the new fields"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/types.ts",
           "operation": "modify",
-          "description": "Add a new route for /admin that renders the AdminPage component, nested under the root layout route"
-        },
-        {
-          "path": "frontend/src/components/Navigation.tsx",
-          "operation": "modify",
-          "description": "Add an 'Admin' navigation link in the desktop and mobile navigation menus that points to /admin"
-        },
-        {
-          "path": "frontend/src/pages/AdminPage.tsx",
-          "operation": "create",
-          "description": "Create the Admin Panel page component that displays a product management interface with a heading, an 'Add Product' button, and the ProductTable component. Handle loading and error states when fetching products using the useProducts query hook"
-        },
-        {
-          "path": "frontend/src/components/ProductTable.tsx",
-          "operation": "create",
-          "description": "Create a table component that displays all products with columns for name, category, price, stock, featured status, and action buttons (Edit, Delete). Each row includes Edit and Delete buttons that trigger the appropriate modals/dialogs. Use shadcn/ui Table components for consistent styling"
-        },
-        {
-          "path": "frontend/src/components/ProductFormDialog.tsx",
-          "operation": "create",
-          "description": "Create a reusable dialog component for adding and editing products. Include form fields for name (text), category (select or text), description (textarea), price (number), imageUrl (text), stock (number), and featured (checkbox). Implement form validation to ensure required fields are filled. Use controlled inputs with React state. Accept props for mode ('add' or 'edit'), initial product data (for edit mode), and callbacks for submit and cancel. On submit, call the appropriate backend method (addProduct or updateProduct) via mutation hooks and show toast notifications for success or error"
-        },
-        {
-          "path": "frontend/src/components/DeleteProductDialog.tsx",
-          "operation": "create",
-          "description": "Create a confirmation dialog component that displays when the user clicks Delete on a product. Show the product name and ask for confirmation before calling the backend deleteProduct method via mutation hook. Display success or error toast notifications after the operation completes"
+          "description": "Add shopifyStoreDomain (string), shopifyStorefrontAccessToken (string), and shopifyEnabled (boolean) fields to the SiteSettings interface to match the backend interface definition"
         },
         {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Add three new mutation hooks: useAddProduct (calls backend addProduct method with product fields and invalidates products query on success), useUpdateProduct (calls backend updateProduct method with product ID and updated fields and invalidates products query on success), and useDeleteProduct (calls backend deleteProduct method with product ID and invalidates products query on success). Each mutation should handle success and error states appropriately"
+          "description": "Update the updateSiteSettings mutation payload type to include the new Shopify fields (shopifyStoreDomain, shopifyStorefrontAccessToken, shopifyEnabled) ensuring they are passed to the backend updateSiteSettings method"
+        }
+      ]
+    },
+    {
+      "id": "REQ-21",
+      "summary": "Add Shopify Integration subsection to SiteSettingsSection component for configuring Shopify credentials",
+      "acceptanceCriteria": [
+        "A 'Shopify Integration' subsection appears in the Site Settings tab of the Admin page",
+        "An enable/disable toggle for the Shopify integration is rendered",
+        "Input fields for Shopify Store Domain and Storefront Access Token are rendered",
+        "Fields are pre-populated with current values loaded from getSiteSettings on mount",
+        "Clicking Save persists values via updateSiteSettings and shows a success toast",
+        "If save fails, an error toast is displayed"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/SiteSettingsSection.tsx",
+          "operation": "modify",
+          "description": "Add a 'Shopify Integration' subsection below the hero banner configuration with: a checkbox/switch for shopifyEnabled, text input for shopifyStoreDomain (placeholder: 'mystore.myshopify.com'), and text input for shopifyStorefrontAccessToken (type password for security). Bind all fields to the siteSettings state loaded from getSiteSettings. Ensure the existing save handler includes the new Shopify fields when calling updateSiteSettings mutation. Show success/error toasts on save completion"
+        }
+      ]
+    },
+    {
+      "id": "REQ-22",
+      "summary": "Create Shopify Products Import UI within Admin page to fetch and import products from Shopify Storefront API",
+      "acceptanceCriteria": [
+        "A 'Shopify Import' tab or panel appears in the Admin page when shopifyEnabled is true",
+        "When Shopify credentials are missing or integration is disabled, a prompt to configure settings is shown instead",
+        "Products are fetched from the Shopify Storefront GraphQL API using the stored domain and access token",
+        "Each product card shows title, thumbnail image, and price",
+        "Clicking 'Import' on a product card calls addProduct on the backend with the product data and shows a success or error toast",
+        "A loading state is shown while products are being fetched from Shopify"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/shopifyApi.ts",
+          "operation": "create",
+          "description": "Create utility module for interacting with Shopify Storefront GraphQL API. Export fetchShopifyProducts function that accepts storeDomain and storefrontAccessToken, constructs the Storefront API endpoint URL, and sends a GraphQL query to fetch products with fields: id, title, description, priceRange, images, productType. Return typed array of Shopify product objects. Include error handling for network failures and invalid credentials"
+        },
+        {
+          "path": "frontend/src/components/ShopifyImportPanel.tsx",
+          "operation": "create",
+          "description": "Create panel component that: (1) accepts siteSettings as prop and checks if shopifyEnabled is true and credentials are configured; (2) if not configured, displays a message prompting admin to configure Shopify settings with a link to the Site Settings tab; (3) if configured, fetches products from Shopify using the fetchShopifyProducts utility and displays them in a responsive grid; (4) for each product, renders a card with thumbnail image, title, formatted price, and an 'Import' button; (5) on Import click, calls the importShopifyProduct backend method (note: verify backend method signature matches Product fields) with mapped Shopify data and shows success/error toast; (6) shows loading skeleton while fetching products from Shopify; (7) handles empty state when no products are returned"
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add useImportShopifyProduct mutation hook that calls the backend importShopifyProduct method. Accept parameters: title, category, description, price, imageUrl, stock, featured. Invalidate the products query cache on success to refresh the product list"
+        },
+        {
+          "path": "frontend/src/pages/AdminPage.tsx",
+          "operation": "modify",
+          "description": "Add a new 'Shopify Import' tab to the Tabs component navigation alongside 'Products' and 'Site Settings'. In the corresponding TabsContent, render the ShopifyImportPanel component passing the current siteSettings from the useSiteSettings query hook. Ensure the tab is always visible in the UI (users will see a configuration prompt if Shopify is not enabled)"
         }
       ]
     }

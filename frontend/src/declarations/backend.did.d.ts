@@ -10,16 +10,41 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface Product {
+  'id' : bigint,
+  'featured' : boolean,
+  'name' : string,
+  'description' : string,
+  'stock' : bigint,
+  'imageUrl' : string,
+  'category' : string,
+  'price' : bigint,
+}
+export interface SiteSettings {
+  'shopifyStoreDomain' : string,
+  'currency' : string,
+  'address' : string,
+  'storeName' : string,
+  'contactEmail' : string,
+  'shopifyStorefrontAccessToken' : string,
+  'heroBannerImageUrl' : string,
+  'shopifyEnabled' : boolean,
+}
+export type UserRole = { 'admin' : null } |
+  { 'user' : null } |
+  { 'guest' : null };
 export interface _SERVICE {
-  'addProduct' : ActorMethod<
+  '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getProducts' : ActorMethod<[], Array<Product>>,
+  'getSiteSettings' : ActorMethod<[], SiteSettings>,
+  'importShopifyProduct' : ActorMethod<
     [string, string, string, bigint, string, bigint, boolean],
-    bigint
+    string
   >,
-  'deleteProduct' : ActorMethod<[bigint], undefined>,
-  'updateProduct' : ActorMethod<
-    [bigint, string, string, string, bigint, string, bigint, boolean],
-    undefined
-  >,
+  'isCallerAdmin' : ActorMethod<[], boolean>,
+  'updateSiteSettings' : ActorMethod<[SiteSettings], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];
