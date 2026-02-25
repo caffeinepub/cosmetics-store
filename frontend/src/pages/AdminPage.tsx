@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, RefreshCw, Settings2, Package, Sliders, ShoppingBag } from 'lucide-react';
+import { Plus, RefreshCw, Settings2, Package, Sliders, ShoppingBag, LogIn, ShieldOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -8,12 +8,58 @@ import ProductFormDialog from '../components/ProductFormDialog';
 import SiteSettingsSection from '../components/SiteSettingsSection';
 import ShopifyImportPanel from '../components/ShopifyImportPanel';
 import { useGetProducts, useGetSiteSettings } from '../hooks/useQueries';
+import { useInternetIdentity } from '../hooks/useInternetIdentity';
 
 export default function AdminPage() {
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('products');
   const { data: products, isLoading, isError, refetch, isFetching } = useGetProducts();
   const { data: siteSettings } = useGetSiteSettings();
+  const { identity, login, loginStatus } = useInternetIdentity();
+
+  const isAuthenticated = !!identity;
+  const isLoggingIn = loginStatus === 'logging-in';
+
+  // ── Authentication Guard ──────────────────────────────────────────────────
+  if (!isAuthenticated) {
+    return (
+      <main className="min-h-screen bg-ivory flex items-center justify-center px-4">
+        <div className="max-w-md w-full text-center space-y-6">
+          <div className="flex justify-center">
+            <div className="w-20 h-20 rounded-2xl bg-rose-dark/10 flex items-center justify-center">
+              <ShieldOff className="w-10 h-10 text-rose-dark/60" />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h1 className="font-serif text-2xl font-semibold text-rose-dark">
+              Admin Access Required
+            </h1>
+            <p className="font-sans text-sm text-foreground/60 leading-relaxed">
+              You must be logged in with an admin account to access the admin panel.
+              Please log in with Internet Identity to continue.
+            </p>
+          </div>
+          <Button
+            onClick={() => login()}
+            disabled={isLoggingIn}
+            className="bg-rose-dark hover:bg-rose-dark/90 text-ivory font-sans shadow-sm px-8"
+          >
+            {isLoggingIn ? (
+              <>
+                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                Logging in…
+              </>
+            ) : (
+              <>
+                <LogIn className="w-4 h-4 mr-2" />
+                Log In with Internet Identity
+              </>
+            )}
+          </Button>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-ivory">

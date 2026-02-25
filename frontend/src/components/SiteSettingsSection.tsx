@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Save, ImageIcon, Loader2, ExternalLink, Store, ShoppingBag, Eye, EyeOff, Palette, Check } from 'lucide-react';
+import { Save, ImageIcon, Loader2, ExternalLink, Store, ShoppingBag, Eye, EyeOff, Palette, Check, ShieldAlert, Megaphone } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useGetSiteSettings, useUpdateSiteSettings } from '../hooks/useQueries';
 import { getHeroImage } from '../utils/imageHelpers';
 
@@ -48,6 +49,28 @@ const COLOR_SCHEMES: ColorSchemeOption[] = [
   },
 ];
 
+// ─── Error Helpers ────────────────────────────────────────────────────────────
+
+/**
+ * Detects whether an error from the backend is an authorization/access-denied error.
+ * The ICP runtime wraps Runtime.trap messages in a string like:
+ * "Canister called ic0.trap with message: Unauthorized: ..."
+ */
+function isUnauthorizedError(error: unknown): boolean {
+  const msg = error instanceof Error ? error.message : String(error);
+  const lower = msg.toLowerCase();
+  return lower.includes('unauthorized') || lower.includes('access denied');
+}
+
+/**
+ * Detects whether the error is a "not authenticated" guard error thrown
+ * before the backend call (i.e., no identity present).
+ */
+function isNotAuthenticatedError(error: unknown): boolean {
+  const msg = error instanceof Error ? error.message : String(error);
+  return msg === 'Please log in to save settings';
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function SiteSettingsSection() {
@@ -67,13 +90,20 @@ export default function SiteSettingsSection() {
   const [shopifyStorefrontAccessToken, setShopifyStorefrontAccessToken] = useState('');
   const [showToken, setShowToken] = useState(false);
 
-  // Color scheme
+  // Color scheme — track separately so we can detect unsaved changes
   const [colorScheme, setColorScheme] = useState('default');
+
+  // Promo banner fields
+  const [promoBannerEnabled, setPromoBannerEnabled] = useState(true);
+  const [promoBannerText, setPromoBannerText] = useState('');
+
+  // Track if the last save attempt was an auth error (to show inline alert)
+  const [authError, setAuthError] = useState(false);
 
   // Populate form when settings load
   useEffect(() => {
     if (settings) {
-      setHeroBannerImageUrl(settings.heroBannerImageUrl);
+      setHeroBannerImageUrl(settings.heroBannerImageUrl ?? '');
       setStoreName(settings.storeName ?? '');
       setContactEmail(settings.contactEmail ?? '');
       setAddress(settings.address ?? '');
@@ -82,35 +112,74 @@ export default function SiteSettingsSection() {
       setShopifyStoreDomain(settings.shopifyStoreDomain ?? '');
       setShopifyStorefrontAccessToken(settings.shopifyStorefrontAccessToken ?? '');
       setColorScheme(settings.colorScheme || 'default');
+      setPromoBannerEnabled(settings.promoBannerEnabled ?? true);
+      setPromoBannerText(settings.promoBannerText ?? '');
       setPreviewError(false);
     }
   }, [settings]);
 
   const previewSrc = heroBannerImageUrl.trim() !== '' ? heroBannerImageUrl : getHeroImage();
 
-  const handleSave = async () => {
-    try {
-      await updateSettings.mutateAsync({
-        heroBannerImageUrl,
-        storeName,
-        contactEmail,
-        address,
-        currency,
-        shopifyEnabled,
-        shopifyStoreDomain,
-        shopifyStorefrontAccessToken,
-        colorScheme,
-      });
-      // Apply color scheme immediately after save
-      document.documentElement.setAttribute('data-color-scheme', colorScheme);
-      toast.success('Site settings saved successfully!');
-    } catch {
-      toast.error('Failed to save site settings. Please try again.');
-    }
+  // Build the full settings payload, always including all fields
+  const buildSettingsPayload = () => ({
+    heroBannerImageUrl,
+    storeName,
+    contactEmail,
+    address,
+    currency,
+    shopifyEnabled,
+    shopifyStoreDomain,
+    shopifyStorefrontAccessToken,
+    colorScheme,
+    promoBannerText,
+    promoBannerEnabled,
+  });
+
+  const handleSave = () => {
+    setAuthError(false);
+    const payload = buildSettingsPayload();
+    updateSettings.mutate(payload, {
+      onSuccess: () => {
+        setAuthError(false);
+        // Apply color scheme immediately in the browser
+        document.documentElement.setAttribute('data-color-scheme', payload.colorScheme);
+        toast.success('Site settings saved successfully!');
+      },
+      onError: (error) => {
+        if (isNotAuthenticatedError(error)) {
+          setAuthError(true);
+          toast.error('Please log in to save settings', {
+            icon: <ShieldAlert className="w-4 h-4" />,
+            duration: 6000,
+          });
+        } else if (isUnauthorizedError(error)) {
+          setAuthError(true);
+          toast.error('Access denied — please ensure you are logged in as an admin', {
+            icon: <ShieldAlert className="w-4 h-4" />,
+            duration: 6000,
+          });
+        } else {
+          const message = error instanceof Error ? error.message : 'Unknown error';
+          toast.error(`Failed to save site settings: ${message}`);
+        }
+      },
+    });
   };
 
   return (
     <div className="space-y-6">
+      {/* Authorization error banner */}
+      {authError && (
+        <Alert variant="destructive" className="border-destructive/50">
+          <ShieldAlert className="h-4 w-4" />
+          <AlertTitle className="font-sans font-semibold">Access Denied</AlertTitle>
+          <AlertDescription className="font-sans text-sm">
+            You do not have permission to save site settings. Only admin users can modify these settings.
+            Please ensure you are logged in with an admin account and try again.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Hero Banner Card */}
       <Card className="border-blush-deep/20 shadow-card">
         <CardHeader className="pb-4">
@@ -146,51 +215,142 @@ export default function SiteSettingsSection() {
                     setHeroBannerImageUrl(e.target.value);
                     setPreviewError(false);
                   }}
-                  className="font-sans border-blush-deep/30 focus-visible:ring-rose-dark/30 bg-white/60"
+                  className="font-sans flex-1"
                 />
                 {heroBannerImageUrl.trim() !== '' && (
-                  <a
-                    href={heroBannerImageUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center w-10 h-10 rounded-lg border border-blush-deep/30 bg-white/60 hover:bg-blush/40 transition-colors shrink-0"
-                    title="Open URL in new tab"
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    asChild
+                    className="shrink-0"
                   >
-                    <ExternalLink className="w-4 h-4 text-foreground/60" />
-                  </a>
+                    <a href={heroBannerImageUrl} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  </Button>
                 )}
               </div>
             )}
-            <p className="font-sans text-xs text-muted-foreground">
-              Enter a full URL to an image. Leave empty to use the default banner.
-            </p>
           </div>
 
-          {/* Preview */}
+          {/* Image Preview */}
           <div className="space-y-2">
             <Label className="font-sans text-sm font-medium text-foreground">Preview</Label>
-            <div className="relative w-full rounded-xl overflow-hidden border border-blush-deep/20 bg-blush/10" style={{ aspectRatio: '14/5' }}>
-              {isLoading ? (
-                <Skeleton className="absolute inset-0 bg-blush/30" />
-              ) : (
-                <>
-                  <img
-                    key={previewSrc}
-                    src={previewError ? getHeroImage() : previewSrc}
-                    alt="Hero banner preview"
-                    className="w-full h-full object-cover object-center"
-                    onError={() => setPreviewError(true)}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-rose-dark/60 via-rose-dark/30 to-transparent" />
-                  <div className="absolute bottom-3 left-4">
-                    <span className="font-sans text-xs text-ivory/70 bg-rose-dark/50 px-2 py-1 rounded-md">
-                      {previewError || heroBannerImageUrl.trim() === '' ? 'Default banner' : 'Custom banner'}
-                    </span>
-                  </div>
-                </>
-              )}
+            <div className="relative w-full h-32 rounded-xl overflow-hidden border border-blush-deep/20 bg-muted">
+              <img
+                src={previewError ? getHeroImage() : previewSrc}
+                alt="Hero banner preview"
+                className="w-full h-full object-cover"
+                onError={() => setPreviewError(true)}
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent" />
+              <span className="absolute bottom-2 left-3 text-white text-xs font-sans font-medium drop-shadow">
+                Hero Banner Preview
+              </span>
             </div>
           </div>
+
+          <Button
+            onClick={handleSave}
+            disabled={updateSettings.isPending}
+            className="font-sans bg-gold hover:bg-gold/90 text-white"
+          >
+            {updateSettings.isPending ? (
+              <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving…</>
+            ) : (
+              <><Save className="w-4 h-4 mr-2" />Save Hero Banner</>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Promotional Banner Card */}
+      <Card className="border-blush-deep/20 shadow-card">
+        <CardHeader className="pb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-gold/10 flex items-center justify-center">
+              <Megaphone className="w-4 h-4 text-gold" />
+            </div>
+            <div>
+              <CardTitle className="font-serif text-lg text-foreground">Promotional Banner</CardTitle>
+              <CardDescription className="font-sans text-sm text-muted-foreground">
+                Configure the scrolling promotional strip shown at the top of the homepage.
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="space-y-5">
+          {/* Enable/Disable Toggle */}
+          <div className="flex items-center justify-between rounded-lg border border-blush-deep/20 p-4">
+            <div className="space-y-0.5">
+              <Label htmlFor="promoBannerEnabled" className="font-sans text-sm font-medium text-foreground">
+                Enable Promotional Banner
+              </Label>
+              <p className="font-sans text-xs text-muted-foreground">
+                Show or hide the scrolling banner on the homepage.
+              </p>
+            </div>
+            {isLoading ? (
+              <Skeleton className="h-6 w-11 rounded-full bg-blush/30" />
+            ) : (
+              <Switch
+                id="promoBannerEnabled"
+                checked={promoBannerEnabled}
+                onCheckedChange={setPromoBannerEnabled}
+              />
+            )}
+          </div>
+
+          {/* Banner Text */}
+          <div className="space-y-2">
+            <Label htmlFor="promoBannerText" className="font-sans text-sm font-medium text-foreground">
+              Banner Message
+            </Label>
+            <p className="font-sans text-xs text-muted-foreground">
+              Leave empty to use the default promotional messages.
+            </p>
+            {isLoading ? (
+              <Skeleton className="h-20 w-full rounded-lg bg-blush/30" />
+            ) : (
+              <Textarea
+                id="promoBannerText"
+                placeholder="e.g. Free shipping on orders over $50 · New arrivals every week · Use code GLOW20 for 20% off"
+                value={promoBannerText}
+                onChange={(e) => setPromoBannerText(e.target.value)}
+                className="font-sans resize-none"
+                rows={3}
+              />
+            )}
+          </div>
+
+          {/* Live Preview */}
+          {promoBannerEnabled && (
+            <div className="space-y-2">
+              <Label className="font-sans text-sm font-medium text-foreground">Live Preview</Label>
+              <div className="rounded-lg overflow-hidden border border-blush-deep/20">
+                <div className="bg-foreground text-background py-2 px-4 text-xs font-sans font-medium overflow-hidden whitespace-nowrap">
+                  <span className="inline-block animate-marquee">
+                    {promoBannerText.trim() !== ''
+                      ? `✨ ${promoBannerText} ✨`
+                      : '✨ Free shipping on orders over $50 · New arrivals every week · Use code GLOW20 for 20% off ✨'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <Button
+            onClick={handleSave}
+            disabled={updateSettings.isPending}
+            className="font-sans bg-gold hover:bg-gold/90 text-white"
+          >
+            {updateSettings.isPending ? (
+              <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving…</>
+            ) : (
+              <><Save className="w-4 h-4 mr-2" />Save Promotional Banner</>
+            )}
+          </Button>
         </CardContent>
       </Card>
 
@@ -204,91 +364,65 @@ export default function SiteSettingsSection() {
             <div>
               <CardTitle className="font-serif text-lg text-foreground">Color Scheme</CardTitle>
               <CardDescription className="font-sans text-sm text-muted-foreground">
-                Choose a color palette that defines the look and feel of your storefront.
+                Choose the visual theme for your store.
               </CardDescription>
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-5">
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-24 w-full rounded-xl bg-blush/30" />
+                <Skeleton key={i} className="h-24 rounded-xl bg-blush/30" />
               ))}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {COLOR_SCHEMES.map((scheme) => {
-                const isSelected = colorScheme === scheme.id;
-                return (
-                  <button
-                    key={scheme.id}
-                    type="button"
-                    onClick={() => setColorScheme(scheme.id)}
-                    className={`relative flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all duration-200 ${
-                      isSelected
-                        ? 'border-rose-dark bg-blush/30 shadow-sm'
-                        : 'border-blush-deep/20 bg-white/50 hover:border-blush-deep/40 hover:bg-blush/10'
-                    }`}
-                  >
-                    {/* Color swatches */}
-                    <div className="flex gap-1 shrink-0">
-                      {scheme.swatches.map((color, idx) => (
-                        <div
-                          key={idx}
-                          className="w-6 h-10 rounded-md first:rounded-l-lg last:rounded-r-lg"
-                          style={{ backgroundColor: color }}
-                        />
-                      ))}
-                    </div>
-
-                    {/* Scheme info */}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-sans text-sm font-semibold text-foreground leading-tight">
-                        {scheme.name}
-                      </p>
-                      <p className="font-sans text-xs text-muted-foreground mt-0.5 leading-snug">
-                        {scheme.description}
-                      </p>
-                    </div>
-
-                    {/* Selected checkmark */}
-                    {isSelected && (
-                      <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-rose-dark flex items-center justify-center">
-                        <Check className="w-3 h-3 text-ivory" />
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
+              {COLOR_SCHEMES.map((scheme) => (
+                <button
+                  key={scheme.id}
+                  onClick={() => setColorScheme(scheme.id)}
+                  className={`relative flex flex-col gap-2 p-4 rounded-xl border-2 text-left transition-all ${
+                    colorScheme === scheme.id
+                      ? 'border-gold bg-gold/5 shadow-sm'
+                      : 'border-blush-deep/20 hover:border-blush-deep/40 hover:bg-muted/50'
+                  }`}
+                >
+                  {colorScheme === scheme.id && (
+                    <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-gold flex items-center justify-center">
+                      <Check className="w-3 h-3 text-white" />
+                    </span>
+                  )}
+                  <div className="flex gap-1.5">
+                    {scheme.swatches.map((color, i) => (
+                      <span
+                        key={i}
+                        className="w-6 h-6 rounded-full border border-black/10 shadow-sm"
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
+                  </div>
+                  <div>
+                    <p className="font-sans text-sm font-semibold text-foreground">{scheme.name}</p>
+                    <p className="font-sans text-xs text-muted-foreground">{scheme.description}</p>
+                  </div>
+                </button>
+              ))}
             </div>
           )}
 
-          <p className="font-sans text-xs text-muted-foreground">
-            The selected color scheme will be applied across the entire storefront after saving.
-          </p>
-
-          {/* Save Button */}
-          <div className="flex justify-end pt-2">
-            <Button
-              onClick={handleSave}
-              disabled={updateSettings.isPending || isLoading}
-              className="bg-rose-dark hover:bg-rose-dark/90 text-ivory font-sans shadow-sm"
-            >
-              {updateSettings.isPending ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Saving…
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Settings
-                </>
-              )}
-            </Button>
-          </div>
+          <Button
+            onClick={handleSave}
+            disabled={updateSettings.isPending}
+            className="font-sans bg-gold hover:bg-gold/90 text-white"
+          >
+            {updateSettings.isPending ? (
+              <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving…</>
+            ) : (
+              <><Save className="w-4 h-4 mr-2" />Save Color Scheme</>
+            )}
+          </Button>
         </CardContent>
       </Card>
 
@@ -302,14 +436,14 @@ export default function SiteSettingsSection() {
             <div>
               <CardTitle className="font-serif text-lg text-foreground">Merchant Settings</CardTitle>
               <CardDescription className="font-sans text-sm text-muted-foreground">
-                Configure your store's business information and preferences.
+                Configure your store's basic information and contact details.
               </CardDescription>
             </div>
           </div>
         </CardHeader>
 
         <CardContent className="space-y-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Store Name */}
             <div className="space-y-2">
               <Label htmlFor="storeName" className="font-sans text-sm font-medium text-foreground">
@@ -320,11 +454,29 @@ export default function SiteSettingsSection() {
               ) : (
                 <Input
                   id="storeName"
-                  type="text"
-                  placeholder="e.g. Glow Shop"
+                  placeholder="My Glow Shop"
                   value={storeName}
                   onChange={(e) => setStoreName(e.target.value)}
-                  className="font-sans border-blush-deep/30 focus-visible:ring-rose-dark/30 bg-white/60"
+                  className="font-sans"
+                />
+              )}
+            </div>
+
+            {/* Contact Email */}
+            <div className="space-y-2">
+              <Label htmlFor="contactEmail" className="font-sans text-sm font-medium text-foreground">
+                Contact Email
+              </Label>
+              {isLoading ? (
+                <Skeleton className="h-10 w-full rounded-lg bg-blush/30" />
+              ) : (
+                <Input
+                  id="contactEmail"
+                  type="email"
+                  placeholder="hello@myglowshop.com"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  className="font-sans"
                 />
               )}
             </div>
@@ -339,79 +491,44 @@ export default function SiteSettingsSection() {
               ) : (
                 <Input
                   id="currency"
-                  type="text"
-                  placeholder="e.g. USD"
+                  placeholder="USD"
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
-                  className="font-sans border-blush-deep/30 focus-visible:ring-rose-dark/30 bg-white/60"
+                  className="font-sans"
                 />
               )}
-              <p className="font-sans text-xs text-muted-foreground">
-                ISO 4217 currency code (e.g. USD, EUR, GBP).
-              </p>
+            </div>
+
+            {/* Address */}
+            <div className="space-y-2">
+              <Label htmlFor="address" className="font-sans text-sm font-medium text-foreground">
+                Business Address
+              </Label>
+              {isLoading ? (
+                <Skeleton className="h-10 w-full rounded-lg bg-blush/30" />
+              ) : (
+                <Input
+                  id="address"
+                  placeholder="123 Beauty Lane, New York, NY"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="font-sans"
+                />
+              )}
             </div>
           </div>
 
-          <Separator className="bg-blush-deep/15" />
-
-          {/* Contact Email */}
-          <div className="space-y-2">
-            <Label htmlFor="contactEmail" className="font-sans text-sm font-medium text-foreground">
-              Contact Email
-            </Label>
-            {isLoading ? (
-              <Skeleton className="h-10 w-full rounded-lg bg-blush/30" />
+          <Button
+            onClick={handleSave}
+            disabled={updateSettings.isPending}
+            className="font-sans bg-gold hover:bg-gold/90 text-white"
+          >
+            {updateSettings.isPending ? (
+              <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving…</>
             ) : (
-              <Input
-                id="contactEmail"
-                type="email"
-                placeholder="e.g. hello@glowshop.com"
-                value={contactEmail}
-                onChange={(e) => setContactEmail(e.target.value)}
-                className="font-sans border-blush-deep/30 focus-visible:ring-rose-dark/30 bg-white/60"
-              />
+              <><Save className="w-4 h-4 mr-2" />Save Merchant Settings</>
             )}
-          </div>
-
-          {/* Address */}
-          <div className="space-y-2">
-            <Label htmlFor="address" className="font-sans text-sm font-medium text-foreground">
-              Address
-            </Label>
-            {isLoading ? (
-              <Skeleton className="h-10 w-full rounded-lg bg-blush/30" />
-            ) : (
-              <Input
-                id="address"
-                type="text"
-                placeholder="e.g. 123 Beauty Lane, New York, NY 10001"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                className="font-sans border-blush-deep/30 focus-visible:ring-rose-dark/30 bg-white/60"
-              />
-            )}
-          </div>
-
-          {/* Save Button */}
-          <div className="flex justify-end pt-2">
-            <Button
-              onClick={handleSave}
-              disabled={updateSettings.isPending || isLoading}
-              className="bg-rose-dark hover:bg-rose-dark/90 text-ivory font-sans shadow-sm"
-            >
-              {updateSettings.isPending ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Saving…
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Settings
-                </>
-              )}
-            </Button>
-          </div>
+          </Button>
         </CardContent>
       </Card>
 
@@ -419,27 +536,21 @@ export default function SiteSettingsSection() {
       <Card className="border-blush-deep/20 shadow-card">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-[#96bf48]/10 flex items-center justify-center">
-              <ShoppingBag className="w-4 h-4 text-[#96bf48]" />
+            <div className="w-9 h-9 rounded-lg bg-gold/10 flex items-center justify-center">
+              <ShoppingBag className="w-4 h-4 text-gold" />
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <CardTitle className="font-serif text-lg text-foreground">Shopify Integration</CardTitle>
-                {!isLoading && (
-                  <Badge
-                    variant={shopifyEnabled ? 'default' : 'outline'}
-                    className={
-                      shopifyEnabled
-                        ? 'bg-[#96bf48]/20 text-[#5a7a1e] border-[#96bf48]/40 font-sans text-xs'
-                        : 'border-blush-deep/30 text-muted-foreground font-sans text-xs'
-                    }
-                  >
-                    {shopifyEnabled ? 'Enabled' : 'Disabled'}
-                  </Badge>
-                )}
+                <Badge
+                  variant={shopifyEnabled ? 'default' : 'secondary'}
+                  className={`font-sans text-xs ${shopifyEnabled ? 'bg-gold/20 text-gold border-gold/30' : ''}`}
+                >
+                  {shopifyEnabled ? 'Enabled' : 'Disabled'}
+                </Badge>
               </div>
               <CardDescription className="font-sans text-sm text-muted-foreground">
-                Connect your Shopify store to import products directly into your catalog.
+                Connect your Shopify store to import products.
               </CardDescription>
             </div>
           </div>
@@ -447,52 +558,48 @@ export default function SiteSettingsSection() {
 
         <CardContent className="space-y-5">
           {/* Enable Toggle */}
-          <div className="flex items-center justify-between p-4 rounded-xl bg-blush/20 border border-blush-deep/15">
-            <div>
-              <p className="font-sans text-sm font-medium text-foreground">Enable Shopify Integration</p>
-              <p className="font-sans text-xs text-muted-foreground mt-0.5">
-                Allow importing products from your Shopify storefront.
+          <div className="flex items-center justify-between rounded-lg border border-blush-deep/20 p-4">
+            <div className="space-y-0.5">
+              <Label htmlFor="shopifyEnabled" className="font-sans text-sm font-medium text-foreground">
+                Enable Shopify Integration
+              </Label>
+              <p className="font-sans text-xs text-muted-foreground">
+                Allow importing products from your Shopify store.
               </p>
             </div>
             {isLoading ? (
               <Skeleton className="h-6 w-11 rounded-full bg-blush/30" />
             ) : (
               <Switch
+                id="shopifyEnabled"
                 checked={shopifyEnabled}
                 onCheckedChange={setShopifyEnabled}
-                className="data-[state=checked]:bg-[#96bf48]"
               />
             )}
           </div>
 
-          <Separator className="bg-blush-deep/15" />
-
           {/* Store Domain */}
           <div className="space-y-2">
             <Label htmlFor="shopifyStoreDomain" className="font-sans text-sm font-medium text-foreground">
-              Shopify Store Domain
+              Store Domain
             </Label>
             {isLoading ? (
               <Skeleton className="h-10 w-full rounded-lg bg-blush/30" />
             ) : (
               <Input
                 id="shopifyStoreDomain"
-                type="text"
                 placeholder="mystore.myshopify.com"
                 value={shopifyStoreDomain}
                 onChange={(e) => setShopifyStoreDomain(e.target.value)}
+                className="font-sans"
                 disabled={!shopifyEnabled}
-                className="font-sans border-blush-deep/30 focus-visible:ring-rose-dark/30 bg-white/60 disabled:opacity-50"
               />
             )}
-            <p className="font-sans text-xs text-muted-foreground">
-              Your Shopify store's .myshopify.com domain (e.g. mystore.myshopify.com).
-            </p>
           </div>
 
           {/* Storefront Access Token */}
           <div className="space-y-2">
-            <Label htmlFor="shopifyStorefrontAccessToken" className="font-sans text-sm font-medium text-foreground">
+            <Label htmlFor="shopifyToken" className="font-sans text-sm font-medium text-foreground">
               Storefront Access Token
             </Label>
             {isLoading ? (
@@ -500,54 +607,38 @@ export default function SiteSettingsSection() {
             ) : (
               <div className="flex gap-2">
                 <Input
-                  id="shopifyStorefrontAccessToken"
+                  id="shopifyToken"
                   type={showToken ? 'text' : 'password'}
                   placeholder="shpat_xxxxxxxxxxxxxxxxxxxx"
                   value={shopifyStorefrontAccessToken}
                   onChange={(e) => setShopifyStorefrontAccessToken(e.target.value)}
+                  className="font-sans flex-1"
                   disabled={!shopifyEnabled}
-                  className="font-sans border-blush-deep/30 focus-visible:ring-rose-dark/30 bg-white/60 disabled:opacity-50"
                 />
-                <button
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setShowToken(!showToken)}
+                  className="shrink-0"
                   type="button"
-                  onClick={() => setShowToken((v) => !v)}
-                  className="flex items-center justify-center w-10 h-10 rounded-lg border border-blush-deep/30 bg-white/60 hover:bg-blush/40 transition-colors shrink-0 disabled:opacity-50"
-                  disabled={!shopifyEnabled}
-                  title={showToken ? 'Hide token' : 'Show token'}
                 >
-                  {showToken ? (
-                    <EyeOff className="w-4 h-4 text-foreground/60" />
-                  ) : (
-                    <Eye className="w-4 h-4 text-foreground/60" />
-                  )}
-                </button>
+                  {showToken ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </Button>
               </div>
             )}
-            <p className="font-sans text-xs text-muted-foreground">
-              Create a Storefront API access token in your Shopify admin under Apps &amp; Sales Channels → Develop apps.
-            </p>
           </div>
 
-          {/* Save Button */}
-          <div className="flex justify-end pt-2">
-            <Button
-              onClick={handleSave}
-              disabled={updateSettings.isPending || isLoading}
-              className="bg-rose-dark hover:bg-rose-dark/90 text-ivory font-sans shadow-sm"
-            >
-              {updateSettings.isPending ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Saving…
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Settings
-                </>
-              )}
-            </Button>
-          </div>
+          <Button
+            onClick={handleSave}
+            disabled={updateSettings.isPending}
+            className="font-sans bg-gold hover:bg-gold/90 text-white"
+          >
+            {updateSettings.isPending ? (
+              <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving…</>
+            ) : (
+              <><Save className="w-4 h-4 mr-2" />Save Shopify Settings</>
+            )}
+          </Button>
         </CardContent>
       </Card>
     </div>

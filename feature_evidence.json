@@ -2,10 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-sitesettings-typescript-type-in-frontend-src-types-ts-and-the-usequeries-ts-hooks-to-include-the-colorscheme-string-field-alongside-existing-sitesettings-fields",
-      "featureTitle": "Update the SiteSettings TypeScript type in frontend/src/types.ts and the useQueries.ts hooks to include the colorScheme string field alongside existing SiteSettings fields.",
+      "featureId": "feature-on-the-frontend-update-the-useactor-hook-usage-in-sitesettingssection-and-the-updatesitesettings-mutation-in-usequeries-ts-to-ensure-the-authenticated-actor-not-the-anonymous-actor-is-always-used-when-calling-updatesitesettings-if-the-actor-is-not-yet-authenticated-the-mutation-should-reject-early-and-surface-a-clear-please-log-in-to-save-settings-error-toast-rather-than-sending-an-anonymous-call-that-the-backend-rejects",
+      "featureTitle": "On the frontend, update the useActor hook usage in SiteSettingsSection and the updateSiteSettings mutation in useQueries.ts to ensure the authenticated actor (not the anonymous actor) is always used when calling updateSiteSettings. If the actor is not yet authenticated, the mutation should reject early and surface a clear 'Please log in to save settings' error toast rather than sending an anonymous call that the backend rejects.",
       "files": [
-        "frontend/src/types.ts"
+        "frontend/src/components/SiteSettingsSection.tsx",
+        "frontend/src/hooks/useQueries.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -16,46 +17,7 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-24"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-color-scheme-subsection-to-the-sitesettingssection-component-in-the-admin-page-display-a-set-of-predefined-color-scheme-options-e-g-default-ivory-gold-rose-petal-midnight-luxe-sage-cream-as-selectable-swatches-or-a-radio-select-control-load-the-current-value-from-getsitesettings-on-mount-and-save-the-selected-scheme-via-the-existing-updatesitesettings-mutation-display-success-error-toast-notifications-on-save",
-      "featureTitle": "Add a 'Color Scheme' subsection to the SiteSettingsSection component in the Admin page. Display a set of predefined color scheme options (e.g., 'Default (Ivory & Gold)', 'Rose Petal', 'Midnight Luxe', 'Sage & Cream') as selectable swatches or a radio/select control. Load the current value from getSiteSettings on mount, and save the selected scheme via the existing updateSiteSettings mutation. Display success/error toast notifications on save.",
-      "files": [
-        "frontend/src/components/SiteSettingsSection.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-25"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-apply-the-active-color-scheme-site-wide-by-reading-the-colorscheme-value-from-getsitesettings-on-app-load-in-app-tsx-or-a-top-level-provider-and-injecting-the-corresponding-css-custom-property-overrides-onto-the-document-root-define-css-variable-sets-for-each-predefined-scheme-that-override-the-existing-brand-color-tokens-in-frontend-src-index-css-ivory-blush-gold-etc",
-      "featureTitle": "Apply the active color scheme site-wide by reading the colorScheme value from getSiteSettings on app load (in App.tsx or a top-level provider) and injecting the corresponding CSS custom property overrides onto the document root. Define CSS variable sets for each predefined scheme that override the existing brand color tokens in frontend/src/index.css (ivory, blush, gold, etc.).",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/index.css"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-26"
+        "REQ-37"
       ],
       "confidence": "high"
     }

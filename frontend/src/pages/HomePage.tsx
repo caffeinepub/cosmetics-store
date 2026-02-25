@@ -29,7 +29,10 @@ export default function HomePage() {
   return (
     <div className="animate-fade-in">
       <HeroBanner heroImageUrl={siteSettings?.heroBannerImageUrl} />
-      <PromoBanner />
+      <PromoBanner
+        promoBannerText={siteSettings?.promoBannerText}
+        promoBannerEnabled={siteSettings?.promoBannerEnabled}
+      />
       <FeaturedProducts />
 
       {/* Features Section */}

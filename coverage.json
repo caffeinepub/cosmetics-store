@@ -1,55 +1,33 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-25T03:44:09.451Z",
+  "generatedAt": "2026-02-25T04:40:07.080Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 3,
+    "total": 2,
+    "implemented": 1,
     "items": [
       {
-        "id": "REQ-23",
-        "summary": "Extend the backend SiteSettings record in main.mo to include a colorScheme field (Text) with a sensible default (e.g., 'default'). Update getSiteSettings and updateSiteSettings actor methods to include this field.",
+        "id": "REQ-36",
+        "summary": "Audit and rewrite the backend authorization logic in backend/main.mo for the updateSiteSettings (and any other admin-protected) actor methods. The root cause is that the admin principal list is either empty at runtime, incorrectly seeded, or the caller identity is being compared against a stale/wrong value. The fix must: (1) capture the deployer's principal at canister install time (using the install message caller) and store it as the initial admin in stable state; (2) compare the runtime caller principal against this stored admin list using Principal.equal; (3) ensure the check is performed correctly so that an authenticated Internet Identity principal that was the deployer is always granted access without throwing an Unauthorized error.",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-24",
-        "summary": "Update the SiteSettings TypeScript type in frontend/src/types.ts and the useQueries.ts hooks to include the colorScheme string field alongside existing SiteSettings fields.",
+        "id": "REQ-37",
+        "summary": "On the frontend, update the useActor hook usage in SiteSettingsSection and the updateSiteSettings mutation in useQueries.ts to ensure the authenticated actor (not the anonymous actor) is always used when calling updateSiteSettings. If the actor is not yet authenticated, the mutation should reject early and surface a clear 'Please log in to save settings' error toast rather than sending an anonymous call that the backend rejects.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/types.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/types.ts"
-        ]
-      },
-      {
-        "id": "REQ-25",
-        "summary": "Add a 'Color Scheme' subsection to the SiteSettingsSection component in the Admin page. Display a set of predefined color scheme options (e.g., 'Default (Ivory & Gold)', 'Rose Petal', 'Midnight Luxe', 'Sage & Cream') as selectable swatches or a radio/select control. Load the current value from getSiteSettings on mount, and save the selected scheme via the existing updateSiteSettings mutation. Display success/error toast notifications on save.",
-        "status": "implemented",
-        "plannedFiles": [
+          "frontend/src/hooks/useQueries.ts",
           "frontend/src/components/SiteSettingsSection.tsx"
         ],
         "matchedFiles": [
+          "frontend/src/hooks/useQueries.ts",
           "frontend/src/components/SiteSettingsSection.tsx"
-        ]
-      },
-      {
-        "id": "REQ-26",
-        "summary": "Apply the active color scheme site-wide by reading the colorScheme value from getSiteSettings on app load (in App.tsx or a top-level provider) and injecting the corresponding CSS custom property overrides onto the document root. Define CSS variable sets for each predefined scheme that override the existing brand color tokens in frontend/src/index.css (ivory, blush, gold, etc.).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/index.css",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/index.css",
-          "frontend/src/App.tsx"
         ]
       }
     ]
@@ -61,15 +39,8 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
     "frontend/src/components/SiteSettingsSection.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/index.css",
-    "frontend/src/types.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

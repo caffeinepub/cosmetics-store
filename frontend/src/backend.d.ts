@@ -8,7 +8,9 @@ export interface None {
 }
 export type Option<T> = Some<T> | None;
 export interface SiteSettings {
+    promoBannerText: string;
     shopifyStoreDomain: string;
+    promoBannerEnabled: boolean;
     currency: string;
     address: string;
     storeName: string;
@@ -17,6 +19,9 @@ export interface SiteSettings {
     heroBannerImageUrl: string;
     shopifyEnabled: boolean;
     colorScheme: string;
+}
+export interface UserProfile {
+    name: string;
 }
 export interface Product {
     id: bigint;
@@ -35,10 +40,13 @@ export enum UserRole {
 }
 export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getProducts(): Promise<Array<Product>>;
     getSiteSettings(): Promise<SiteSettings>;
+    getUserProfile(user: Principal): Promise<UserProfile | null>;
     importShopifyProduct(title: string, category: string, description: string, price: bigint, imageUrl: string, stock: bigint, featured: boolean): Promise<string>;
     isCallerAdmin(): Promise<boolean>;
-    updateSiteSettings(settings: SiteSettings): Promise<void>;
+    saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    updateSiteSettings(newSettings: SiteSettings): Promise<void>;
 }

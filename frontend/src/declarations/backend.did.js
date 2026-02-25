@@ -13,6 +13,7 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 export const Product = IDL.Record({
   'id' : IDL.Nat,
   'featured' : IDL.Bool,
@@ -24,7 +25,9 @@ export const Product = IDL.Record({
   'price' : IDL.Nat,
 });
 export const SiteSettings = IDL.Record({
+  'promoBannerText' : IDL.Text,
   'shopifyStoreDomain' : IDL.Text,
+  'promoBannerEnabled' : IDL.Bool,
   'currency' : IDL.Text,
   'address' : IDL.Text,
   'storeName' : IDL.Text,
@@ -38,15 +41,22 @@ export const SiteSettings = IDL.Record({
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'getSiteSettings' : IDL.Func([], [SiteSettings], ['query']),
+  'getUserProfile' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(UserProfile)],
+      ['query'],
+    ),
   'importShopifyProduct' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Text, IDL.Nat, IDL.Text, IDL.Nat, IDL.Bool],
       [IDL.Text],
       [],
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'updateSiteSettings' : IDL.Func([SiteSettings], [], []),
 });
 
@@ -58,6 +68,7 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
+  const UserProfile = IDL.Record({ 'name' : IDL.Text });
   const Product = IDL.Record({
     'id' : IDL.Nat,
     'featured' : IDL.Bool,
@@ -69,7 +80,9 @@ export const idlFactory = ({ IDL }) => {
     'price' : IDL.Nat,
   });
   const SiteSettings = IDL.Record({
+    'promoBannerText' : IDL.Text,
     'shopifyStoreDomain' : IDL.Text,
+    'promoBannerEnabled' : IDL.Bool,
     'currency' : IDL.Text,
     'address' : IDL.Text,
     'storeName' : IDL.Text,
@@ -83,15 +96,22 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'getSiteSettings' : IDL.Func([], [SiteSettings], ['query']),
+    'getUserProfile' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(UserProfile)],
+        ['query'],
+      ),
     'importShopifyProduct' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, IDL.Nat, IDL.Text, IDL.Nat, IDL.Bool],
         [IDL.Text],
         [],
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'updateSiteSettings' : IDL.Func([SiteSettings], [], []),
   });
 };

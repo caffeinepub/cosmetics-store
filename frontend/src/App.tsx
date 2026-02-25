@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { RouterProvider, createRouter, createRoute, createRootRoute, Outlet } from '@tanstack/react-router';
+import { RouterProvider, createRouter, createRoute, createRootRoute } from '@tanstack/react-router';
 import { Toaster } from '@/components/ui/sonner';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
@@ -16,14 +16,18 @@ function ColorSchemeApplier() {
   const { data: settings } = useGetSiteSettings();
 
   useEffect(() => {
-    const scheme = settings?.colorScheme || 'default';
-    document.documentElement.setAttribute('data-color-scheme', scheme);
+    const scheme = settings?.colorScheme;
+    if (scheme) {
+      document.documentElement.setAttribute('data-color-scheme', scheme);
+    } else {
+      document.documentElement.setAttribute('data-color-scheme', 'default');
+    }
   }, [settings?.colorScheme]);
 
   return null;
 }
 
-// Root route with layout
+// Root route with layout — keeps flat route IDs (e.g. /product/$id) intact
 const rootRoute = createRootRoute({
   component: () => (
     <>

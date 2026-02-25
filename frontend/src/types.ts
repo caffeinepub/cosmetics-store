@@ -40,4 +40,6 @@ export interface SiteSettings {
   shopifyStorefrontAccessToken: string;
   shopifyEnabled: boolean;
   colorScheme: string;
+  promoBannerText: string;
+  promoBannerEnabled: boolean;
 }

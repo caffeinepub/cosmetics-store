@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
+import { useInternetIdentity } from './useInternetIdentity';
 import { getSessionId } from '../utils/session';
+import type { SiteSettings as BackendSiteSettings } from '../backend';
 import type { Product, ShoppingCart, SiteSettings } from '../types';
 
 // The generated backend interface only includes admin methods.
@@ -18,6 +20,8 @@ const defaultSiteSettings: SiteSettings = {
   shopifyStorefrontAccessToken: '',
   shopifyEnabled: false,
   colorScheme: 'default',
+  promoBannerText: '',
+  promoBannerEnabled: true,
 };
 
 // ─── Products ────────────────────────────────────────────────────────────────
@@ -72,10 +76,12 @@ export interface ProductFormData {
 
 export function useAddProduct() {
   const { actor } = useActor();
+  const { identity } = useInternetIdentity();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: ProductFormData) => {
+      if (!identity) throw new Error('Not authenticated: please log in to perform this action');
       if (!actor) throw new Error('Actor not ready');
       return (actor as FullActor).addProduct(
         data.name,
@@ -96,10 +102,12 @@ export function useAddProduct() {
 
 export function useUpdateProduct() {
   const { actor } = useActor();
+  const { identity } = useInternetIdentity();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: bigint; data: ProductFormData }) => {
+      if (!identity) throw new Error('Not authenticated: please log in to perform this action');
       if (!actor) throw new Error('Actor not ready');
       return (actor as FullActor).updateProduct(
         id,
@@ -122,10 +130,12 @@ export function useUpdateProduct() {
 
 export function useDeleteProduct() {
   const { actor } = useActor();
+  const { identity } = useInternetIdentity();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (id: bigint) => {
+      if (!identity) throw new Error('Not authenticated: please log in to perform this action');
       if (!actor) throw new Error('Actor not ready');
       return (actor as FullActor).deleteProduct(id);
     },
@@ -144,7 +154,24 @@ export function useGetSiteSettings() {
     queryKey: ['site-settings'],
     queryFn: async (): Promise<SiteSettings> => {
       if (!actor) return defaultSiteSettings;
-      return actor.getSiteSettings();
+      try {
+        const result = await actor.getSiteSettings();
+        return {
+          heroBannerImageUrl: result.heroBannerImageUrl ?? '',
+          storeName: result.storeName ?? '',
+          contactEmail: result.contactEmail ?? '',
+          address: result.address ?? '',
+          currency: result.currency ?? '',
+          shopifyStoreDomain: result.shopifyStoreDomain ?? '',
+          shopifyStorefrontAccessToken: result.shopifyStorefrontAccessToken ?? '',
+          shopifyEnabled: result.shopifyEnabled ?? false,
+          colorScheme: result.colorScheme ?? 'default',
+          promoBannerText: result.promoBannerText ?? '',
+          promoBannerEnabled: result.promoBannerEnabled ?? true,
+        };
+      } catch {
+        return defaultSiteSettings;
+      }
     },
     enabled: !!actor && !isFetching,
   });
@@ -152,12 +179,33 @@ export function useGetSiteSettings() {
 
 export function useUpdateSiteSettings() {
   const { actor } = useActor();
+  const { identity } = useInternetIdentity();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (newSettings: SiteSettings) => {
+      // Guard: must be authenticated before calling the backend
+      if (!identity) {
+        throw new Error('Please log in to save settings');
+      }
       if (!actor) throw new Error('Actor not ready');
-      return actor.updateSiteSettings(newSettings);
+
+      // Explicitly construct the payload matching the backend SiteSettings record
+      // to ensure all fields are included in Candid encoding
+      const payload: BackendSiteSettings = {
+        heroBannerImageUrl: newSettings.heroBannerImageUrl,
+        storeName: newSettings.storeName,
+        contactEmail: newSettings.contactEmail,
+        address: newSettings.address,
+        currency: newSettings.currency,
+        shopifyStoreDomain: newSettings.shopifyStoreDomain,
+        shopifyStorefrontAccessToken: newSettings.shopifyStorefrontAccessToken,
+        shopifyEnabled: newSettings.shopifyEnabled,
+        colorScheme: newSettings.colorScheme,
+        promoBannerText: newSettings.promoBannerText,
+        promoBannerEnabled: newSettings.promoBannerEnabled,
+      };
+      return actor.updateSiteSettings(payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['site-settings'] });
@@ -179,10 +227,12 @@ export interface ShopifyImportData {
 
 export function useImportShopifyProduct() {
   const { actor } = useActor();
+  const { identity } = useInternetIdentity();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: ShopifyImportData) => {
+      if (!identity) throw new Error('Not authenticated: please log in to perform this action');
       if (!actor) throw new Error('Actor not ready');
       return actor.importShopifyProduct(
         data.title,

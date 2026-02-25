@@ -1,98 +1,58 @@
 {
   "kind": "build_request",
-  "title": "Add color scheme options to Site Settings",
-  "projectName": "Glow Shop",
-  "priority": "normal",
+  "title": "Fix backend authorization for updateSiteSettings — persistent Unauthorized error",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-23",
-      "text": "Extend the backend SiteSettings record in main.mo to include a colorScheme field (Text) with a sensible default (e.g., 'default'). Update getSiteSettings and updateSiteSettings actor methods to include this field.",
+      "id": "REQ-36",
+      "text": "Audit and rewrite the backend authorization logic in backend/main.mo for the updateSiteSettings (and any other admin-protected) actor methods. The root cause is that the admin principal list is either empty at runtime, incorrectly seeded, or the caller identity is being compared against a stale/wrong value. The fix must: (1) capture the deployer's principal at canister install time (using the install message caller) and store it as the initial admin in stable state; (2) compare the runtime caller principal against this stored admin list using Principal.equal; (3) ensure the check is performed correctly so that an authenticated Internet Identity principal that was the deployer is always granted access without throwing an Unauthorized error.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-7"
+          "msg-latest"
         ],
         "quotes": [
-          "add color scheme options to site settings"
+          "Access denied — please ensure you are logged in as an admin"
         ]
       },
       "acceptanceCriteria": [
-        "SiteSettings record in main.mo includes a colorScheme Text field",
-        "getSiteSettings returns the colorScheme value",
-        "updateSiteSettings accepts and persists the colorScheme value",
-        "Default value for colorScheme is a non-breaking empty string or named preset (e.g., 'default')"
+        "The canister records the deploying principal as admin in stable state during canister initialization (system func init or postupgrade).",
+        "Calling updateSiteSettings with the authenticated admin principal succeeds and returns the updated settings without an Unauthorized error.",
+        "Calling updateSiteSettings with an unauthenticated or non-admin principal still returns an Unauthorized error.",
+        "getSiteSettings remains publicly callable without authentication.",
+        "No regression in other admin-protected methods (addProduct, updateProduct, deleteProduct)."
       ]
     },
     {
-      "id": "REQ-24",
-      "text": "Update the SiteSettings TypeScript type in frontend/src/types.ts and the useQueries.ts hooks to include the colorScheme string field alongside existing SiteSettings fields.",
+      "id": "REQ-37",
+      "text": "On the frontend, update the useActor hook usage in SiteSettingsSection and the updateSiteSettings mutation in useQueries.ts to ensure the authenticated actor (not the anonymous actor) is always used when calling updateSiteSettings. If the actor is not yet authenticated, the mutation should reject early and surface a clear 'Please log in to save settings' error toast rather than sending an anonymous call that the backend rejects.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-7"
+          "msg-latest"
         ],
         "quotes": [
-          "add color scheme options to site settings"
+          "Access denied — please ensure you are logged in as an admin"
         ]
       },
       "acceptanceCriteria": [
-        "SiteSettings TypeScript interface includes colorScheme: string",
-        "useGetSiteSettings hook returns colorScheme",
-        "updateSiteSettings mutation payload includes colorScheme"
-      ]
-    },
-    {
-      "id": "REQ-25",
-      "text": "Add a 'Color Scheme' subsection to the SiteSettingsSection component in the Admin page. Display a set of predefined color scheme options (e.g., 'Default (Ivory & Gold)', 'Rose Petal', 'Midnight Luxe', 'Sage & Cream') as selectable swatches or a radio/select control. Load the current value from getSiteSettings on mount, and save the selected scheme via the existing updateSiteSettings mutation. Display success/error toast notifications on save.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-7"
-        ],
-        "quotes": [
-          "add color scheme options to site settings"
-        ]
-      },
-      "acceptanceCriteria": [
-        "A 'Color Scheme' subsection appears in the Site Settings tab of the Admin page",
-        "At least 4 predefined color scheme options are presented as selectable swatches or radio/select inputs",
-        "Each swatch visually previews the primary colors of that scheme",
-        "The currently saved color scheme is pre-selected when the section loads",
-        "Clicking 'Save' calls updateSiteSettings with the selected colorScheme value",
-        "A success toast appears on successful save; an error toast appears on failure"
-      ]
-    },
-    {
-      "id": "REQ-26",
-      "text": "Apply the active color scheme site-wide by reading the colorScheme value from getSiteSettings on app load (in App.tsx or a top-level provider) and injecting the corresponding CSS custom property overrides onto the document root. Define CSS variable sets for each predefined scheme that override the existing brand color tokens in frontend/src/index.css (ivory, blush, gold, etc.).",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-7"
-        ],
-        "quotes": [
-          "add color scheme options to site settings"
-        ]
-      },
-      "acceptanceCriteria": [
-        "On app load, the active colorScheme is fetched from getSiteSettings",
-        "The corresponding CSS variable overrides are applied to :root or document.documentElement",
-        "Switching the color scheme in Admin Settings and saving immediately reflects the new palette on the storefront after a page reload or query invalidation",
-        "The 'Default' scheme preserves the existing ivory/blush/gold palette with no visual regression",
-        "Each alternative scheme applies visually distinct but cohesive palette changes across the navigation, hero banner, buttons, and product cards"
+        "The updateSiteSettings mutation uses the authenticated actor (Internet Identity identity attached) when the user is logged in.",
+        "If the user is not authenticated, the mutation does not call the backend and instead shows a toast: 'Please log in to save settings'.",
+        "If the backend returns an Unauthorized error despite authentication, the existing descriptive error toast 'Access denied — please ensure you are logged in as an admin' is displayed.",
+        "On a successful save, a success toast is displayed."
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui",
-    "The default color scheme must not cause any visual regression to the existing ivory/blush/gold theme",
-    "All Motoko logic must remain in the single main actor file (backend/main.mo)"
+    "Do not change the SiteSettings record shape or add/remove any fields.",
+    "Do not modify any files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui.",
+    "Preserve all existing admin-protected backend methods and their signatures."
   ],
   "nonGoals": [
-    "Custom free-form color picker or hex input for arbitrary colors",
-    "Per-user or per-session color theme preferences",
-    "Dark mode toggle (separate concern from brand color schemes)",
-    "Modifying the Tailwind config at runtime"
+    "Adding new site settings fields.",
+    "Changes to the color scheme, promo banner, or Shopify integration features.",
+    "UI redesign or layout changes.",
+    "Adding new admin users beyond the deployer principal."
   ],
   "imageRequirements": {
     "required": [],

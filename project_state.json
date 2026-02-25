@@ -1,10 +1,13 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 13,
+  "projectStateVersion": 23,
   "summary": "E-commerce website for selling cosmetics products.",
   "architectural_notes": [],
-  "known_issues": [],
-  "isFixRequest": false,
+  "known_issues": [
+    "Color scheme change fails to save in Site Settings admin panel",
+    "Saving site settings returns 'Unauthorized: ICP Store: Access denied' error"
+  ],
+  "isFixRequest": true,
   "existing_features": [
     {
       "id": "feature-build-a-homepage-with-a-full-width-hero-banner-section-with-a-headline-and-call-to-action-button-a-featured-products-section-showing-featured-products-in-a-responsive-grid-and-a-promotional-banner-or-marquee-strip-highlighting-offers",
@@ -149,6 +152,62 @@
         "REQ-26"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-investigate-and-fix-the-bug-causing-the-color-scheme-selection-to-fail-when-saving-in-the-sitesettingssection-component-ensure-that-the-colorscheme-field-is-correctly-included-in-the-updatesitesettings-mutation-payload-sent-from-the-frontend-that-the-backend-updatesitesettings-actor-method-correctly-accepts-and-persists-the-colorscheme-text-field-and-that-the-saved-value-is-returned-by-getsitesettings-on-the-next-load-after-a-successful-save-the-sitesettingssection-must-show-a-success-toast-on-failure-an-error-toast",
+      "title": "Investigate and fix the bug causing the color scheme selection to fail when saving in the SiteSettingsSection component. Ensure that the colorScheme field is correctly included in the updateSiteSettings mutation payload sent from the frontend, that the backend updateSiteSettings actor method correctly accepts and persists the colorScheme (Text) field, and that the saved value is returned by getSiteSettings on the next load. After a successful save, the SiteSettingsSection must show a success toast; on failure, an error toast.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-sitesettingssection-component-and-the-usequeries-ts-updatesitesettings-mutation-to-ensure-that-when-an-unauthorized-error-is-returned-from-the-backend-a-descriptive-error-toast-is-shown-to-the-admin-user-e-g-access-denied-please-ensure-you-are-logged-in-as-an-admin-on-a-successful-save-a-success-toast-must-still-be-displayed",
+      "title": "Update the SiteSettingsSection component and the useQueries.ts updateSiteSettings mutation to ensure that when an Unauthorized error is returned from the backend, a descriptive error toast is shown to the admin user (e.g., 'Access denied — please ensure you are logged in as an admin'). On a successful save, a success toast must still be displayed.",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-on-the-frontend-ensure-the-adminpage-tsx-or-a-top-level-admin-guard-surfaces-a-clear-message-to-the-user-if-they-attempt-to-access-admin-functionality-without-being-authenticated-via-internet-identity-prompting-them-to-log-in-if-the-user-is-authenticated-but-the-backend-still-returns-an-unauthorized-error-the-existing-descriptive-error-toast-access-denied-please-ensure-you-are-logged-in-as-an-admin-must-be-displayed-in-sitesettingssection",
+      "title": "On the frontend, ensure the AdminPage.tsx or a top-level admin guard surfaces a clear message to the user if they attempt to access admin functionality without being authenticated via Internet Identity, prompting them to log in. If the user is authenticated but the backend still returns an Unauthorized error, the existing descriptive error toast ('Access denied — please ensure you are logged in as an admin') must be displayed in SiteSettingsSection.",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-sitesettings-typescript-interface-in-frontend-src-types-ts-and-the-usequeries-ts-hooks-to-include-the-new-promotional-banner-fields-promobannertext-string-and-promobannerenabled-boolean-alongside-all-existing-sitesettings-fields",
+      "title": "Update the SiteSettings TypeScript interface in frontend/src/types.ts and the useQueries.ts hooks to include the new promotional banner fields: promoBannerText (string) and promoBannerEnabled (boolean) alongside all existing SiteSettings fields.",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-promotional-banner-subsection-to-the-sitesettingssection-component-in-the-admin-page-the-subsection-must-include-a-toggle-checkbox-to-enable-or-disable-the-banner-promobannerenabled-and-a-textarea-or-text-input-for-the-banner-message-content-promobannertext-both-fields-must-be-loaded-from-getsitesettings-on-mount-and-saved-via-the-existing-updatesitesettings-mutation-display-success-error-toast-notifications-on-save-including-the-existing-unauthorized-error-toast-if-access-is-denied",
+      "title": "Add a 'Promotional Banner' subsection to the SiteSettingsSection component in the Admin page. The subsection must include: a toggle/checkbox to enable or disable the banner (promoBannerEnabled), and a textarea or text input for the banner message content (promoBannerText). Both fields must be loaded from getSiteSettings on mount and saved via the existing updateSiteSettings mutation. Display success/error toast notifications on save, including the existing Unauthorized error toast if access is denied.",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-promobanner-component-frontend-src-components-promobanner-tsx-to-dynamically-use-the-promotional-banner-settings-from-site-settings-on-app-load-the-component-should-receive-promobannertext-and-promobannerenabled-from-the-site-settings-data-already-fetched-in-app-tsx-or-homepage-tsx-if-promobannerenabled-is-false-the-banner-must-not-be-rendered-if-promobannertext-is-non-empty-it-should-be-used-as-the-marquee-content-otherwise-fall-back-to-the-existing-static-promotional-messages",
+      "title": "Update the PromoBanner component (frontend/src/components/PromoBanner.tsx) to dynamically use the promotional banner settings from site settings. On app load, the component should receive promoBannerText and promoBannerEnabled from the site settings data (already fetched in App.tsx or HomePage.tsx). If promoBannerEnabled is false, the banner must not be rendered. If promoBannerText is non-empty, it should be used as the marquee content; otherwise fall back to the existing static promotional messages.",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-on-the-frontend-update-the-useactor-hook-usage-in-sitesettingssection-and-the-updatesitesettings-mutation-in-usequeries-ts-to-ensure-the-authenticated-actor-not-the-anonymous-actor-is-always-used-when-calling-updatesitesettings-if-the-actor-is-not-yet-authenticated-the-mutation-should-reject-early-and-surface-a-clear-please-log-in-to-save-settings-error-toast-rather-than-sending-an-anonymous-call-that-the-backend-rejects",
+      "title": "On the frontend, update the useActor hook usage in SiteSettingsSection and the updateSiteSettings mutation in useQueries.ts to ensure the authenticated actor (not the anonymous actor) is always used when calling updateSiteSettings. If the actor is not yet authenticated, the mutation should reject early and surface a clear 'Please log in to save settings' error toast rather than sending an anonymous call that the backend rejects.",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -267,6 +326,44 @@
       "summary": "Extend the backend SiteSettings record in main.mo to include a colorScheme field (Text) with a sensible default (e.g., 'default'). Update getSiteSettings and updateSiteSettings actor methods to include this field.",
       "reqIds": [
         "REQ-23"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Investigate and fix the 'Unauthorized: ICP Store: Access denied' error thrown by the backend updateSiteSettings actor method. The authorization check is incorrectly rejecting authenticated admin users. Audit the caller identity validation logic in main.mo: ensure the method correctly identifies the calling principal (e.g., the Internet Identity principal of the logged-in admin), and that the admin principal list or authorization guard is correctly populated and compared. The fix must allow a logged-in admin user to successfully call updateSiteSettings without receiving an Unauthorized error.",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Audit and fix the backend authorization logic in main.mo for the updateSiteSettings actor method. The method must correctly resolve the calling principal at runtime using the Internet Identity principal of the authenticated admin, compare it against the stored admin principal list, and grant access without throwing an Unauthorized error. Ensure the admin principal is registered/seeded correctly so that a logged-in admin can always call updateSiteSettings successfully.",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Add the ability to edit the scrolling/marquee promotional banner text and settings from the Admin Panel Site Settings section.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Extend the backend SiteSettings record in main.mo to include promotional banner fields: promoBannerText (Text) storing the marquee message content, and promoBannerEnabled (Bool) to toggle banner visibility. Update getSiteSettings and updateSiteSettings actor methods to include these fields with sensible defaults (promoBannerText defaulting to the existing promotional copy, promoBannerEnabled defaulting to true).",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Audit and rewrite the backend authorization logic in backend/main.mo for the updateSiteSettings (and any other admin-protected) actor methods. The root cause is that the admin principal list is either empty at runtime, incorrectly seeded, or the caller identity is being compared against a stale/wrong value. The fix must: (1) capture the deployer's principal at canister install time (using the install message caller) and store it as the initial admin in stable state; (2) compare the runtime caller principal against this stored admin list using Principal.equal; (3) ensure the check is performed correctly so that an authenticated Internet Identity principal that was the deployer is always granted access without throwing an Unauthorized error.",
+      "reqIds": [
+        "REQ-36"
       ],
       "status": "pending"
     }

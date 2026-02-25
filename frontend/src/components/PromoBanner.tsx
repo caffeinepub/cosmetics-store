@@ -1,6 +1,6 @@
 import { getPromoBanner } from '../utils/imageHelpers';
 
-const promoItems = [
+const defaultPromoItems = [
   '✦ Free shipping on orders over $50',
   '✦ New arrivals every week',
   '✦ Cruelty-free & vegan formulas',
@@ -9,8 +9,23 @@ const promoItems = [
   '✦ Exclusive member rewards',
 ];
 
-export default function PromoBanner() {
-  const doubled = [...promoItems, ...promoItems];
+interface PromoBannerProps {
+  promoBannerText?: string;
+  promoBannerEnabled?: boolean;
+}
+
+export default function PromoBanner({ promoBannerText, promoBannerEnabled = true }: PromoBannerProps) {
+  // If explicitly disabled, render nothing
+  if (promoBannerEnabled === false) return null;
+
+  // If a custom text is provided, use it as a single scrolling item (doubled for seamless loop)
+  // Otherwise fall back to the default static items
+  const items =
+    promoBannerText && promoBannerText.trim() !== ''
+      ? [promoBannerText.trim()]
+      : defaultPromoItems;
+
+  const doubled = [...items, ...items];
 
   return (
     <div

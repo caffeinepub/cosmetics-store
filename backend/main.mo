@@ -4,12 +4,12 @@ import Runtime "mo:core/Runtime";
 import Map "mo:core/Map";
 import Iter "mo:core/Iter";
 import Principal "mo:core/Principal";
-import Migration "migration";
+import Migration "migration"; // Reference the migration module
 
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
-// Persistent actor with migration and authorization
+// Add the migration attribute
 (with migration = Migration.run)
 actor {
   type SiteSettings = {
@@ -21,7 +21,9 @@ actor {
     shopifyStoreDomain : Text;
     shopifyStorefrontAccessToken : Text;
     shopifyEnabled : Bool;
-    colorScheme : Text; // New field for color scheme
+    colorScheme : Text;
+    promoBannerText : Text;
+    promoBannerEnabled : Bool;
   };
 
   type Product = {
@@ -39,16 +41,13 @@ actor {
     name : Text;
   };
 
-  // MANUAL STEP: must use component import here
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
-  /// Store products as persistent Map.
   let products = Map.empty<Nat, Product>();
   var nextProductId = 0;
 
-  // Persistent site settings incl. Shopify integration
-  var siteSettingsPersistent : SiteSettings = {
+  var siteSettings : SiteSettings = {
     heroBannerImageUrl = "/default-hero-image.jpg";
     storeName = "";
     contactEmail = "";
@@ -57,21 +56,31 @@ actor {
     shopifyStoreDomain = "";
     shopifyStorefrontAccessToken = "";
     shopifyEnabled = false;
-    colorScheme = "default"; // Default color scheme
+    colorScheme = "default";
+    promoBannerText = "/icp Commerce: First 20 customers get 5% off shipping";
+    promoBannerEnabled = true;
   };
 
-  // Products management
-  public query ({ caller }) func getProducts() : async [Product] {
+  let userProfiles = Map.empty<Principal, UserProfile>();
+
+  public query func getProducts() : async [Product] {
     products.values().toArray();
   };
 
-  // Import Shopify Product (admin-only: requires persistent settings)
-  public shared ({ caller }) func importShopifyProduct(title : Text, category : Text, description : Text, price : Nat, imageUrl : Text, stock : Nat, featured : Bool) : async Text {
+  public shared ({ caller }) func importShopifyProduct(
+    title : Text,
+    category : Text,
+    description : Text,
+    price : Nat,
+    imageUrl : Text,
+    stock : Nat,
+    featured : Bool,
+  ) : async Text {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can import products from Shopify.");
     };
 
-    if (not siteSettingsPersistent.shopifyEnabled) {
+    if (not siteSettings.shopifyEnabled) {
       Runtime.trap("Shopify integration is not enabled. Please enable in site settings first.");
     };
 
@@ -94,18 +103,35 @@ actor {
     "Product successfully imported from Shopify and added to ICP Store";
   };
 
-  // Site Settings
-  public query ({ caller }) func getSiteSettings() : async SiteSettings {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: ICP Store: Access denied");
-    };
-    siteSettingsPersistent;
+  public query func getSiteSettings() : async SiteSettings {
+    siteSettings;
   };
 
-  public shared ({ caller }) func updateSiteSettings(settings : SiteSettings) : async () {
+  public shared ({ caller }) func updateSiteSettings(newSettings : SiteSettings) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: ICP Store: Access denied");
     };
-    siteSettingsPersistent := settings;
+    siteSettings := newSettings;
+  };
+
+  public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view their profile");
+    };
+    userProfiles.get(caller);
+  };
+
+  public query ({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
+    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Can only view your own profile");
+    };
+    userProfiles.get(user);
+  };
+
+  public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can save profiles");
+    };
+    userProfiles.add(caller, profile);
   };
 };

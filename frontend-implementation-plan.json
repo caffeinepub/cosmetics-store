@@ -1,63 +1,27 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add color scheme options to Site Settings",
+  "title": "Fix frontend authorization for updateSiteSettings mutation",
   "requirements": [
     {
-      "id": "REQ-24",
-      "summary": "Update SiteSettings TypeScript type to include colorScheme field",
+      "id": "REQ-37",
+      "summary": "Update the frontend to ensure updateSiteSettings mutation always uses the authenticated actor and guards against unauthenticated calls with a clear error message",
       "acceptanceCriteria": [
-        "SiteSettings TypeScript interface includes colorScheme: string",
-        "useGetSiteSettings hook returns colorScheme",
-        "updateSiteSettings mutation payload includes colorScheme"
+        "The updateSiteSettings mutation uses the authenticated actor (Internet Identity identity attached) when the user is logged in.",
+        "If the user is not authenticated, the mutation does not call the backend and instead shows a toast: 'Please log in to save settings'.",
+        "If the backend returns an Unauthorized error despite authentication, the existing descriptive error toast 'Access denied — please ensure you are logged in as an admin' is displayed.",
+        "On a successful save, a success toast is displayed."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/types.ts",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Add colorScheme: string field to the SiteSettings interface alongside existing fields (shopifyStoreDomain, currency, address, storeName, contactEmail, shopifyStorefrontAccessToken, heroBannerImageUrl, shopifyEnabled)"
-        }
-      ]
-    },
-    {
-      "id": "REQ-25",
-      "summary": "Add Color Scheme subsection to SiteSettingsSection component with predefined scheme selector",
-      "acceptanceCriteria": [
-        "A 'Color Scheme' subsection appears in the Site Settings tab of the Admin page",
-        "At least 4 predefined color scheme options are presented as selectable swatches or radio/select inputs",
-        "Each swatch visually previews the primary colors of that scheme",
-        "The currently saved color scheme is pre-selected when the section loads",
-        "Clicking 'Save' calls updateSiteSettings with the selected colorScheme value",
-        "A success toast appears on successful save; an error toast appears on failure"
-      ],
-      "file_operations": [
+          "description": "Modify the useUpdateSiteSettings mutation hook to verify the actor is authenticated before calling updateSiteSettings. Add an early guard that checks if the identity is present on the actor. If not authenticated, reject the mutation with a 'Please log in to save settings' error before making the backend call. Preserve the existing error handling for backend Unauthorized responses."
+        },
         {
           "path": "frontend/src/components/SiteSettingsSection.tsx",
           "operation": "modify",
-          "description": "Add a 'Color Scheme' subsection below existing fields. Define predefined color schemes: 'default' (Ivory & Gold), 'rose-petal', 'midnight-luxe', and 'sage-cream'. Render each as a selectable swatch displaying a visual preview of its primary colors. Load the current colorScheme value from useGetSiteSettings on mount and pre-select it. Include the selected colorScheme in the updateSiteSettings mutation payload alongside existing fields. Display success/error toasts using the existing toast pattern after save completes."
-        }
-      ]
-    },
-    {
-      "id": "REQ-26",
-      "summary": "Apply active color scheme site-wide by injecting CSS custom property overrides on app load",
-      "acceptanceCriteria": [
-        "On app load, the active colorScheme is fetched from getSiteSettings",
-        "The corresponding CSS variable overrides are applied to :root or document.documentElement",
-        "Switching the color scheme in Admin Settings and saving immediately reflects the new palette on the storefront after a page reload or query invalidation",
-        "The 'Default' scheme preserves the existing ivory/blush/gold palette with no visual regression",
-        "Each alternative scheme applies visually distinct but cohesive palette changes across the navigation, hero banner, buttons, and product cards"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Define CSS custom property override sets for each predefined color scheme (default, rose-petal, midnight-luxe, sage-cream) using data attribute selectors on :root (e.g., :root[data-color-scheme='rose-petal']). Each scheme overrides the brand color tokens (--ivory, --blush, --gold, --ivory-light, --gold-dark) with OKLCH values that provide visually distinct but cohesive palettes. The 'default' scheme retains the existing ivory/blush/gold tokens without changes."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Fetch the active colorScheme from getSiteSettings using useGetSiteSettings hook on app load. Apply the colorScheme value as a data-color-scheme attribute on document.documentElement (e.g., document.documentElement.setAttribute('data-color-scheme', colorScheme || 'default')). Re-apply the attribute whenever the colorScheme query data changes to support immediate reflection after Admin save and query invalidation."
+          "description": "Update the handleSave function to handle the new authentication guard error from the useUpdateSiteSettings mutation. When the mutation rejects due to missing authentication, display a toast with the message 'Please log in to save settings'. Preserve the existing error toast for backend authorization failures ('Access denied — please ensure you are logged in as an admin'). Ensure the success toast is displayed on successful saves."
         }
       ]
     }

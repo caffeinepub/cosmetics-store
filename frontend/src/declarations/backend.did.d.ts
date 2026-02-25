@@ -21,7 +21,9 @@ export interface Product {
   'price' : bigint,
 }
 export interface SiteSettings {
+  'promoBannerText' : string,
   'shopifyStoreDomain' : string,
+  'promoBannerEnabled' : boolean,
   'currency' : string,
   'address' : string,
   'storeName' : string,
@@ -31,20 +33,24 @@ export interface SiteSettings {
   'shopifyEnabled' : boolean,
   'colorScheme' : string,
 }
+export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getProducts' : ActorMethod<[], Array<Product>>,
   'getSiteSettings' : ActorMethod<[], SiteSettings>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'importShopifyProduct' : ActorMethod<
     [string, string, string, bigint, string, bigint, boolean],
     string
   >,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'updateSiteSettings' : ActorMethod<[SiteSettings], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
